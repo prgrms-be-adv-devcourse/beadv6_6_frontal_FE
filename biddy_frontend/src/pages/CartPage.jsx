@@ -114,7 +114,7 @@ export default function CartPage() {
     return (
       <PageContainer>
         <Header showBack title="장바구니" showCart={false} />
-        <div className="space-y-3 pt-4">
+        <div className="mx-auto w-full max-w-md space-y-3 pt-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />
           ))}
@@ -127,7 +127,7 @@ export default function CartPage() {
     return (
       <PageContainer>
         <Header showBack title="장바구니" showCart={false} />
-        <div className="flex flex-col items-center gap-3 py-24 text-center">
+        <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 py-24 text-center">
           <div className="grid h-16 w-16 place-items-center rounded-full bg-muted text-muted-foreground">
             <ShoppingCart size={28} />
           </div>
@@ -145,8 +145,9 @@ export default function CartPage() {
   }
 
   return (
-    <PageContainer withTabBar={false}>
+    <PageContainer>
       <Header showBack title="장바구니" showCart={false} />
+      <div className="mx-auto w-full max-w-md">
 
       <div className="flex items-center justify-between pt-3 pb-1">
         <label className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -199,7 +200,7 @@ export default function CartPage() {
       </ul>
 
       {/* Sticky total */}
-      <div className="fixed bottom-[58px] left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
+      <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-sm text-muted-foreground">선택 상품 {selectedItems.length}개</span>
           <span className="text-lg font-extrabold text-foreground">{formatKRW(total)}</span>
@@ -211,6 +212,7 @@ export default function CartPage() {
         >
           주문하기
         </button>
+      </div>
       </div>
     </PageContainer>
   )

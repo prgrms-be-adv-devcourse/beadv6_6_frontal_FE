@@ -50,8 +50,9 @@ export default function NormalProductCreatePage() {
   }
 
   return (
-    <PageContainer withTabBar={false}>
+    <PageContainer>
       <Header showBack title="일반 판매 등록" showCart={false} />
+      <div className="mx-auto w-full max-w-md">
       <button
         onClick={handleSubmit}
         disabled={submitting}
@@ -90,6 +91,7 @@ export default function NormalProductCreatePage() {
           <Select value={form.condition} onChange={update("condition")} options={CONDITIONS} />
         </Field>
       </form>
+      </div>
     </PageContainer>
   )
 }

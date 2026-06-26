@@ -48,16 +48,17 @@ export default function ProductEditPage() {
 
   if (!form) {
     return (
-      <PageContainer withTabBar={false}>
+      <PageContainer>
         <Header showBack title="상품 수정" showCart={false} />
-        <p className="py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
+        <p className="mx-auto w-full max-w-md py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
       </PageContainer>
     )
   }
 
   return (
-    <PageContainer withTabBar={false}>
+    <PageContainer>
       <Header showBack title="상품 수정" showCart={false} />
+      <div className="mx-auto w-full max-w-md">
 
       <button
         onClick={handleSubmit}
@@ -93,6 +94,7 @@ export default function ProductEditPage() {
 
         <label className="text-sm font-semibold text-foreground">브랜드</label>
         <input value={form.brand} onChange={update("brand")} className="rounded-lg bg-card px-3 py-2.5 ring-1 ring-border" />
+      </div>
       </div>
     </PageContainer>
   )

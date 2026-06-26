@@ -8,7 +8,7 @@ import { requestDepositPayment } from "../lib/tossPayments"
 
 const CHARGE_OPTIONS = [50000, 100000, 300000, 500000]
 
-export default function WalletPage() {
+export default function WalletPage({ embedded = false }) {
   const [wallet, setWallet] = useState(null)
   const [loading, setLoading] = useState(true)
   const [charging, setCharging] = useState(null)
@@ -77,33 +77,39 @@ export default function WalletPage() {
   const normalizedCustomAmount = Number(customAmount)
 
   if (loading && !wallet) {
+    const loadingContent = <div className="py-20 text-center text-sm text-muted-foreground">불러오는 중...</div>
+    if (embedded) return loadingContent
     return (
       <>
         <Header title="내 지갑" />
         <PageContainer>
-          <div className="py-20 text-center text-sm text-muted-foreground">불러오는 중...</div>
+          <div className="mx-auto w-full max-w-md">{loadingContent}</div>
         </PageContainer>
       </>
     )
   }
 
   if (error && !wallet) {
+    const errorContent = (
+      <div className="flex flex-col items-center gap-3 py-20 text-center">
+        <p className="text-sm font-semibold text-foreground">예치금 정보를 불러오지 못했습니다</p>
+        <p className="text-xs text-muted-foreground">{error}</p>
+        <button
+          type="button"
+          onClick={refreshWallet}
+          className="mt-2 flex h-10 items-center gap-2 rounded-lg bg-dark px-4 text-sm font-semibold text-dark-foreground"
+        >
+          <RefreshCw className="h-4 w-4" />
+          다시 불러오기
+        </button>
+      </div>
+    )
+    if (embedded) return errorContent
     return (
       <>
         <Header title="내 지갑" />
         <PageContainer>
-          <div className="flex flex-col items-center gap-3 py-20 text-center">
-            <p className="text-sm font-semibold text-foreground">예치금 정보를 불러오지 못했습니다</p>
-            <p className="text-xs text-muted-foreground">{error}</p>
-            <button
-              type="button"
-              onClick={refreshWallet}
-              className="mt-2 flex h-10 items-center gap-2 rounded-lg bg-dark px-4 text-sm font-semibold text-dark-foreground"
-            >
-              <RefreshCw className="h-4 w-4" />
-              다시 불러오기
-            </button>
-          </div>
+          <div className="mx-auto w-full max-w-md">{errorContent}</div>
         </PageContainer>
       </>
     )
@@ -115,12 +121,11 @@ export default function WalletPage() {
     return bTime - aTime
   })
 
-  return (
+  const walletContent = (
     <>
-      <Header title="내 지갑" />
-      <PageContainer>
-        <div className="py-4">
-          {/* Balance card */}
+      <div className={embedded ? "" : "py-4"}>
+        {embedded && <h1 className="mb-4 text-xl font-extrabold text-foreground">지갑</h1>}
+        {/* Balance card */}
           <div className="rounded-2xl bg-dark p-5 text-dark-foreground">
             <div className="flex items-center gap-2 text-sm opacity-80">
               <WalletIcon className="h-4 w-4" />
@@ -239,7 +244,17 @@ export default function WalletPage() {
               </ul>
             )}
           </div>
-        </div>
+      </div>
+    </>
+  )
+
+  if (embedded) return walletContent
+
+  return (
+    <>
+      <Header title="내 지갑" />
+      <PageContainer>
+        <div className="mx-auto w-full max-w-md">{walletContent}</div>
       </PageContainer>
     </>
   )

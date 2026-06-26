@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { Plus } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import { fetchProducts, deleteProduct } from "../api/productApi"
@@ -47,7 +48,7 @@ export default function ProductListPage() {
 
       <div className="px-4 pt-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-foreground">상품 목록 (Product 도메인)</h2>
+          <h2 className="text-base font-bold text-foreground">상품 목록</h2>
           <button
             onClick={load}
             className="rounded-lg bg-card px-3 py-1.5 text-xs font-semibold text-foreground ring-1 ring-border"
@@ -57,7 +58,7 @@ export default function ProductListPage() {
         </div>
 
         {/* 판매유형 필터 */}
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex gap-2 sm:w-80">
           {SALE_TYPES.map((t) => (
             <button
               key={t.key}
@@ -72,24 +73,16 @@ export default function ProductListPage() {
             </button>
           ))}
         </div>
-
-        {/* 등록 버튼 */}
-        <button
-          onClick={() => navigate("/products/create")}
-          className="mt-3 w-full rounded-lg bg-teal py-2.5 text-sm font-semibold text-teal-foreground"
-        >
-          + 상품 등록
-        </button>
       </div>
 
       {/* 목록 */}
-      <div className="mt-4 flex flex-col gap-2 px-4 pb-24">
+      <div className="mt-4 grid grid-cols-1 gap-3 px-4 pb-24 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {loading ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
+          <p className="col-span-full py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
         ) : error ? (
-          <p className="py-10 text-center text-sm text-red-500">에러: {error}</p>
+          <p className="col-span-full py-10 text-center text-sm text-red-500">에러: {error}</p>
         ) : items.length === 0 ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">상품이 없습니다.</p>
+          <p className="col-span-full py-10 text-center text-sm text-muted-foreground">상품이 없습니다.</p>
         ) : (
           items.map((p) => (
             <div
@@ -141,6 +134,15 @@ export default function ProductListPage() {
           ))
         )}
       </div>
+
+      {/* 상품 등록 플로팅 버튼 */}
+      <button
+        onClick={() => navigate("/products/create")}
+        aria-label="상품 등록"
+        className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-teal text-teal-foreground shadow-lg shadow-teal/30 transition-transform hover:scale-105"
+      >
+        <Plus size={26} />
+      </button>
     </PageContainer>
   )
 }

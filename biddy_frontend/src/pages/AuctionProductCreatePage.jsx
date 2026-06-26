@@ -42,8 +42,9 @@ export default function AuctionProductCreatePage() {
   }
 
   return (
-    <PageContainer withTabBar={false}>
+    <PageContainer>
       <Header showBack title="경매 상품 등록" showCart={false} />
+      <div className="mx-auto w-full max-w-md">
 
       <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-soft px-3.5 py-3 text-sm text-amber">
         <Gavel size={18} />
@@ -82,6 +83,7 @@ export default function AuctionProductCreatePage() {
 
         <label className="text-sm font-semibold text-foreground">브랜드</label>
         <input value={form.brand} onChange={update("brand")} placeholder="브랜드" className="rounded-lg bg-card px-3 py-2.5 ring-1 ring-border" />
+      </div>
       </div>
     </PageContainer>
   )

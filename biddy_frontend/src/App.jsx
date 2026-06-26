@@ -1,7 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom"
-import BottomTabBar from "./components/BottomTabBar"
 import ProtectedRoute from "./components/ProtectedRoute"
-import { useAuth } from "./contexts/AuthContext"
 import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
 import ProductListPage from "./pages/ProductListPage"
@@ -14,45 +12,47 @@ import CartPage from "./pages/CartPage"
 import OrderPage from "./pages/OrderPage"
 import WalletPage from "./pages/WalletPage"
 import MyPage from "./pages/Mypage"
+import MyPageLayout from "./components/MyPageLayout"
 import AdminPage from "./pages/AdminsPage"
 import AdminRoute from "./components/AdminRoute"
-import MainPage from "./pages/MainPage"
 import { DepositChargeFailPage, DepositChargeSuccessPage } from "./pages/DepositChargeResultPage"
 import PaymentSuccessPage from "./pages/PaymentSuccessPage"
 import PaymentFailPage from "./pages/PaymentFailPage"
 
 export default function App() {
-  const { isAuthenticated } = useAuth()
-
   return (
     <>
       <Routes>
-        <Route path="/" element={<MainPage />} />
-  <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
+        {/* 홈 = 상품 목록 (로그인 필요 — 비로그인 시 /login으로 이동) */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <ProductListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/products" element={<Navigate to="/" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route
           path="/mypage"
           element={
             <ProtectedRoute>
-              <MyPage />
+              <MyPageLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<MyPage />} />
+          <Route path="orders" element={<OrderPage embedded />} />
+          <Route path="wallet" element={<WalletPage embedded />} />
+        </Route>
         <Route
           path="/admin"
           element={
             <AdminRoute>
               <AdminPage />
             </AdminRoute>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute>
-              <ProductListPage />
-            </ProtectedRoute>
           }
         />
         <Route
@@ -151,9 +151,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/products" : "/login"} replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {isAuthenticated && <BottomTabBar />}
     </>
   )
 }

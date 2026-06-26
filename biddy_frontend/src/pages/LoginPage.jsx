@@ -36,8 +36,8 @@ export default function LoginPage() {
   }
 
   return (
-    <PageContainer withTabBar={false} className="flex flex-col">
-      <main className="flex min-h-screen flex-col justify-center py-10">
+    <PageContainer className="flex flex-col">
+      <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center py-10">
         <div className="mb-9">
           <Link className="text-xl font-extrabold tracking-tight text-dark" to="/">
             Bid<span className="text-teal">dy</span>

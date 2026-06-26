@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LogOut, UserX } from "lucide-react"
-import PageContainer from "../components/PageContainer"
 import { Field, TextInput } from "../components/FormField"
 import { useAuth } from "../contexts/AuthContext"
 import { getMyInfo, updateNickname, updatePassword, withdrawMember } from "../api/memberApi"
 
+// Rendered as the index section inside MyPageLayout's sidebar (no own Header/PageContainer).
 export default function MyPage() {
   const navigate = useNavigate()
-  const { logout, isAdmin } = useAuth()
+  const { logout } = useAuth()
 
   const [info, setInfo] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -78,26 +78,12 @@ export default function MyPage() {
   }
 
   if (loading) {
-    return (
-      <PageContainer>
-        <p className="py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
-      </PageContainer>
-    )
+    return <p className="py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
   }
 
   return (
-    <PageContainer className="flex flex-col gap-6 py-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-foreground">마이페이지</h1>
-        {isAdmin && (
-          <button
-            onClick={() => navigate("/admin")}
-            className="rounded-lg bg-teal-soft px-3 py-1.5 text-xs font-semibold text-teal"
-          >
-            관리자 페이지
-          </button>
-        )}
-      </header>
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
+      <h1 className="text-xl font-extrabold text-foreground">내 정보</h1>
 
       {loadError && <p className="text-sm font-medium text-red-600">{loadError}</p>}
 
@@ -166,6 +152,6 @@ export default function MyPage() {
           <UserX size={16} /> 회원 탈퇴
         </button>
       </div>
-    </PageContainer>
+    </div>
   )
 }

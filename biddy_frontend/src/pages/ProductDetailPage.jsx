@@ -74,7 +74,24 @@ function NormalDetail({ product }) {
             {added ? "담김" : "장바구니"}
           </button>
           <button
-            onClick={() => navigate("/cart")}
+            onClick={() =>
+              navigate("/orders", {
+                state: {
+                  items: [
+                    {
+                      id: product.id,
+                      productId: product.id,
+                      title: product.title,
+                      price: product.price,
+                      qty: 1,
+                      image: product.image,
+                      sellerId: product.sellerId,
+                    },
+                  ],
+                  total: product.price,
+                },
+              })
+            }
             className="h-12 flex-1 rounded-xl bg-teal font-semibold text-teal-foreground"
           >
             즉시구매
@@ -195,8 +212,9 @@ export default function ProductDetailPage() {
   }, [id])
 
   return (
-    <PageContainer noPadX withTabBar={false}>
+    <PageContainer noPadX>
       <Header showBack title="상품 상세" showCart />
+      <div className="mx-auto w-full max-w-md">
 
       {loading ? (
         <div className="px-4">
@@ -218,6 +236,7 @@ export default function ProductDetailPage() {
           {product.type === "auction" ? <AuctionDetail product={product} /> : <NormalDetail product={product} />}
         </>
       )}
+      </div>
     </PageContainer>
   )
 }
