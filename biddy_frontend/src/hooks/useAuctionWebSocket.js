@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Client } from "@stomp/stompjs"
 
+const WS_URL = import.meta.env.VITE_WS_URL
+
 export default function useAuctionWebSocket(auctionId) {
   const clientRef = useRef(null)
   const [connected, setConnected] = useState(false)
@@ -11,9 +13,13 @@ export default function useAuctionWebSocket(auctionId) {
 
   const connect = useCallback(() => {
     if (!auctionId) return
+    if (!WS_URL) {
+      console.warn("VITE_WS_URL is not defined")
+      return
+    }
 
     const client = new Client({
-      brokerURL: "ws://43.200.204.191:8084/ws",
+      brokerURL: WS_URL,
       reconnectDelay: 3000,
       onConnect: () => {
         setConnected(true)
