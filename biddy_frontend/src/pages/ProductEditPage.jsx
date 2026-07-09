@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { X } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
-import { fetchProductById, updateProduct } from "../api/productApi"
+import ImageUploader from "../components/ImageUploader"
+import { fetchProductById, updateProduct, uploadProductImages, deleteProductImage } from "../api/productApi"
 import { useFeedback } from "../contexts/FeedbackContext"
 
 export default function ProductEditPage() {
@@ -10,6 +12,8 @@ export default function ProductEditPage() {
   const navigate = useNavigate()
   const { showToast } = useFeedback()
   const [form, setForm] = useState(null)
+  const [existingImages, setExistingImages] = useState([])
+  const [newFiles, setNewFiles] = useState([])
   const [submitting, setSubmitting] = useState(false)
 
   // 기존 상품 정보 불러오기
@@ -25,11 +29,22 @@ export default function ProductEditPage() {
           category: p.category,
           brand: p.brand ?? "",
         })
+        setExistingImages(p.imageUrls ?? [])
       }
     })
   }, [id])
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
+
+  const handleRemoveExistingImage = async (url) => {
+    try {
+      await deleteProductImage(id, url)
+      setExistingImages((imgs) => imgs.filter((img) => img !== url))
+      showToast({ message: "이미지가 삭제되었습니다.", type: "success" })
+    } catch (err) {
+      showToast({ message: "이미지 삭제 실패: " + err.message, type: "error" })
+    }
+  }
 
   const handleSubmit = async () => {
     setSubmitting(true)
@@ -39,6 +54,9 @@ export default function ProductEditPage() {
         price: Number(form.price),
         stock: Number(form.stock),
       })
+      if (newFiles.length > 0) {
+        await uploadProductImages(id, newFiles)
+      }
       showToast({ message: "상품이 수정되었습니다.", type: "success" })
       navigate("/products")
     } catch (err) {
@@ -63,6 +81,25 @@ export default function ProductEditPage() {
       <div className="mx-auto w-full max-w-md">
 
       <div className="flex flex-col gap-3 pt-4 pb-40">
+        <label className="text-sm font-semibold text-foreground">이미지</label>
+        {existingImages.length > 0 && (
+          <div className="no-scrollbar flex gap-2 overflow-x-auto">
+            {existingImages.map((url) => (
+              <div key={url} className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl ring-1 ring-border">
+                <img src={url} alt="상품 이미지" className="h-full w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveExistingImage(url)}
+                  className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-dark/80 text-dark-foreground"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <ImageUploader max={5 - existingImages.length} onFilesChange={setNewFiles} />
+
         <label className="text-sm font-semibold text-foreground">상품명</label>
         <input value={form.title} onChange={update("title")} className="rounded-lg bg-card px-3 py-2.5 ring-1 ring-border" />
 
