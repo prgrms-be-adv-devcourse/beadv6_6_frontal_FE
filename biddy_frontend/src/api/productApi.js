@@ -156,3 +156,11 @@ export async function uploadProductImages(productId, files) {
   if (!res.ok) throw new Error("이미지 업로드 실패")
   return res.json()
 }
+
+// 이미지 삭제
+export async function deleteProductImage(productId, imageUrl) {
+  await apiRequest(`/products/${productId}/images?url=${encodeURIComponent(imageUrl)}`, {
+    method: "DELETE",
+  })
+  return true
+}
