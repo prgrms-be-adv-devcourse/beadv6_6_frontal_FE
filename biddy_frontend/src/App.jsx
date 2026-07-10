@@ -32,15 +32,8 @@ export default function App() {
   return (
     <>
       <Routes>
-        {/* 홈 = 상품 목록 (로그인 필요 — 비로그인 시 /login으로 이동) */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <ProductListPage />
-            </ProtectedRoute>
-          }
-        />
+        {/* 홈 = 상품 목록 (비로그인도 조회 가능) */}
+        <Route path="/" element={<ProductListPage />} />
         <Route path="/products" element={<Navigate to="/" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -96,14 +89,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/products/:id"
-          element={
-            <ProtectedRoute>
-              <ProductDetailPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route
           path="/cart"
           element={
