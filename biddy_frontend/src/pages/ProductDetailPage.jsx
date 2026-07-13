@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { Heart, ShoppingCart, Clock, Gavel, Star, ShieldCheck } from "lucide-react"
+import { Heart, ShoppingCart, Clock, Gavel, Star, ShieldCheck, MessageCircle } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import StatusBadge from "../components/StatusBadge"
@@ -12,6 +12,7 @@ import { formatKRW, timeLeft } from "../lib/format"
 import { useAuth } from "../contexts/AuthContext"
 import { fetchMemberNickname } from "../api/memberApi"
 import { useFeedback } from "../contexts/FeedbackContext"
+import { createOrGetRoom } from "../api/chatApi"
 
 function SellerCard({ seller }) {
   return (
@@ -59,6 +60,15 @@ function NormalDetail({ product, isOwner }) {
     }
   }
 
+  const handleStartChat = async () => {
+    try {
+      const room = await createOrGetRoom(product.id, product.sellerId)
+      navigate(`/chats/${room.id}`)
+    } catch (err) {
+      showToast({ message: "채팅방을 열 수 없습니다.", type: "error" })
+    }
+  }
+
   const handleAdd = async () => {
     await addToCart(product.id)
     setAdded(true)
@@ -94,6 +104,13 @@ function NormalDetail({ product, isOwner }) {
               }`}
             >
               <Heart size={22} className={liked ? "fill-white text-white" : "text-muted-foreground"} />
+            </button>
+            <button
+              onClick={handleStartChat}
+              aria-label="채팅하기"
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-background ring-1 ring-border"
+            >
+              <MessageCircle size={22} className="text-muted-foreground" />
             </button>
             <button
               onClick={handleAdd}
@@ -132,7 +149,9 @@ function NormalDetail({ product, isOwner }) {
   )
 }
 
-function AuctionDetail({ product }) {
+function AuctionDetail({ product, isOwner }) {
+  const navigate = useNavigate()
+  const { showToast } = useFeedback()
   const a = product.auction ?? {}
   const [currentBid, setCurrentBid] = useState(a.currentBid ?? 0)
   const [bidCount, setBidCount] = useState(a.bidCount ?? 0)
@@ -146,6 +165,15 @@ function AuctionDetail({ product }) {
   }, [a.endAt])
 
   const nextBid = currentBid + a.bidUnit
+
+  const handleStartChat = async () => {
+    try {
+      const room = await createOrGetRoom(product.id, product.sellerId)
+      navigate(`/chats/${room.id}`)
+    } catch (err) {
+      showToast({ message: "채팅방을 열 수 없습니다.", type: "error" })
+    }
+  }
 
   const handleBid = async () => {
     setSubmitting(true)
@@ -208,16 +236,27 @@ function AuctionDetail({ product }) {
       </div>
 
       {/* Sticky bid */}
-      <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
-        <button
-          onClick={handleBid}
-          disabled={submitting || remaining.ended}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50"
-        >
-          <Gavel size={18} />
-          {remaining.ended ? "마감된 경매입니다" : `${formatKRW(nextBid)} 입찰하기`}
-        </button>
-      </div>
+      {!isOwner && (
+        <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleStartChat}
+              aria-label="채팅하기"
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-background ring-1 ring-border"
+            >
+              <MessageCircle size={22} className="text-muted-foreground" />
+            </button>
+            <button
+              onClick={handleBid}
+              disabled={submitting || remaining.ended}
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50"
+            >
+              <Gavel size={18} />
+              {remaining.ended ? "마감된 경매입니다" : `${formatKRW(nextBid)} 입찰하기`}
+            </button>
+          </div>
+        </div>
+      )}
     </>
   )
 }
@@ -278,7 +317,7 @@ export default function ProductDetailPage() {
             <img src={product.image || "/placeholder.svg"} alt={product.title} className="h-full w-full object-cover" />
           </div>
           {product.type === "auction"
-            ? <AuctionDetail product={product} />
+            ? <AuctionDetail product={product} isOwner={Number(product.sellerId) === Number(user?.id)} />
             : <NormalDetail product={product} isOwner={Number(product.sellerId) === Number(user?.id)} />
           }
         </>

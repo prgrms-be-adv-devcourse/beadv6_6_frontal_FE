@@ -1,11 +1,10 @@
 import { apiRequest } from "./client"
 
-export const createOrGetRoom = async (productId, buyerId, sellerId) => {
+export const createOrGetRoom = async (productId, sellerId) => {
   const response = await apiRequest("/chats/rooms", {
     method: "POST",
     body: {
       productId,
-      buyerId,
       sellerId
     }
   })
