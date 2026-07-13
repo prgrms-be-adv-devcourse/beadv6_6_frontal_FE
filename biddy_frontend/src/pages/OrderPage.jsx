@@ -206,7 +206,7 @@ export default function OrderPage({ embedded = false }) {
           }
           
           showToast({ message: "예치금 결제가 완료되었습니다.", type: "success" })
-          navigate("/orders", { replace: true })
+          navigate(`/payments/success?paymentMethod=WALLET&orderId=${orderId}&amount=${amount}`, { replace: true })
           return
         }
 

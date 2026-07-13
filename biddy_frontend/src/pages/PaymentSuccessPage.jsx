@@ -13,6 +13,7 @@ export default function PaymentSuccessPage() {
   const navigate = useNavigate()
   const hasCalled = useRef(false)
 
+  const paymentMethod = searchParams.get("paymentMethod")
   const paymentKey = searchParams.get("paymentKey")
   const tossOrderId = searchParams.get("orderId")
   const amountStr = searchParams.get("amount")
@@ -22,6 +23,17 @@ export default function PaymentSuccessPage() {
   const [paymentDetails, setPaymentDetails] = useState(null)
 
   useEffect(() => {
+    if (paymentMethod === "WALLET") {
+      if (!tossOrderId || !amountStr) {
+        setStatus("error")
+        setErrorMessage("결제 정보가 올바르지 않습니다.")
+        return
+      }
+      setPaymentDetails({ orderId: tossOrderId })
+      setStatus("success")
+      return
+    }
+
     if (!paymentKey || !tossOrderId || !amountStr) {
       setStatus("error")
       setErrorMessage("결제 정보가 올바르지 않습니다.")
@@ -80,7 +92,7 @@ export default function PaymentSuccessPage() {
         setStatus("error")
         setErrorMessage(err.message || "결제 승인 처리 중 오류가 발생했습니다.")
       })
-  }, [paymentKey, tossOrderId, amountStr])
+  }, [paymentMethod, paymentKey, tossOrderId, amountStr])
 
   return (
     <PageContainer withTabBar={false}>
