@@ -7,6 +7,7 @@ export default function useChatWebSocket(roomId) {
   const { user } = useAuth()
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isConnected, setIsConnected] = useState(false)
   const clientRef = useRef(null)
   
   // Load initial history
@@ -52,6 +53,7 @@ export default function useChatWebSocket(roomId) {
 
     client.onConnect = (frame) => {
       console.log('Connected: ' + frame)
+      setIsConnected(true)
       
       // Subscribe to room
       client.subscribe(`/topic/room/${roomId}`, (message) => {
@@ -65,6 +67,10 @@ export default function useChatWebSocket(roomId) {
     client.onStompError = (frame) => {
       console.error('Broker reported error: ' + frame.headers['message'])
       console.error('Additional details: ' + frame.body)
+    }
+    
+    client.onWebSocketClose = () => {
+      setIsConnected(false)
     }
 
     client.activate()
@@ -80,7 +86,7 @@ export default function useChatWebSocket(roomId) {
   const sendMessage = (content) => {
     if (clientRef.current && clientRef.current.connected) {
       clientRef.current.publish({
-        destination: `/app/chat/rooms/${roomId}`,
+        destination: `/app/chat.send`,
         body: JSON.stringify({
           roomId: Number(roomId),
           senderId: Number(user.id),
@@ -96,6 +102,6 @@ export default function useChatWebSocket(roomId) {
     messages,
     loading,
     sendMessage,
-    isConnected: !!clientRef.current?.connected
+    isConnected
   }
 }
