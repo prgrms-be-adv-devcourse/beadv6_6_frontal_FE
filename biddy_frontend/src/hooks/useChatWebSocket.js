@@ -38,8 +38,11 @@ export default function useChatWebSocket(roomId) {
     const token = localStorage.getItem("accessToken")
     if (!token) return
 
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+    const wsUrl = baseUrl.replace(/^http/, 'ws').replace(/\/api$/, '/ws-chat')
+
     const client = new Client({
-      brokerURL: 'ws://localhost:8000/ws-chat',
+      brokerURL: wsUrl,
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },
