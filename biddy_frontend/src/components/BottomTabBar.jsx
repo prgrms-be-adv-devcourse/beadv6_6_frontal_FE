@@ -1,9 +1,9 @@
 import { NavLink, useLocation } from "react-router-dom"
-import { Home, ClipboardList, PlusCircle, ShoppingCart, Wallet } from "lucide-react"
+import { MessageCircle, Home, ClipboardList, PlusCircle, ShoppingCart, Wallet } from "lucide-react"
 
 const tabs = [
   { to: "/", label: "상품", icon: Home },
-  { to: "/cart", label: "장바구니", icon: ShoppingCart },
+  { to: "/chats", label: "채팅", icon: MessageCircle },
   { to: "/products/create", label: "등록", icon: PlusCircle },
   { to: "/orders", label: "거래내역", icon: ClipboardList },
   { to: "/wallet", label: "지갑", icon: Wallet },
@@ -20,7 +20,9 @@ export default function BottomTabBar() {
     "/wallet/charge/success",
     "/wallet/charge/fail",
   ]
-  const visibleRoutes = ["/", "/cart", "/orders", "/wallet", "/mypage"]
+  // 채팅 상세 방 안에서는 바텀 탭바를 가리는게 보통이므로 /chats/:id 는 안보이게 하려면, visibleRoutes에 /chats 만 허용하거나 startsWith 처리를 해야함.
+  // 여기서는 명시적으로 지정
+  const visibleRoutes = ["/", "/chats", "/cart", "/orders", "/wallet", "/mypage"]
   const isCreateRoute = location.pathname === "/products/create"
 
   if (hiddenRoutes.some((route) => location.pathname.startsWith(route))) {

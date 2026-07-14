@@ -25,6 +25,8 @@ import { DepositChargeFailPage, DepositChargeSuccessPage } from "./pages/Deposit
 import PaymentSuccessPage from "./pages/PaymentSuccessPage"
 import PaymentFailPage from "./pages/PaymentFailPage"
 import LikedProductsPage from "./pages/LikedProductsPage"
+import ChatListPage from "./pages/ChatListPage"
+import ChatRoomPage from "./pages/ChatRoomPage"
 
 export default function App() {
   const { isAuthenticated } = useAuth()
@@ -151,6 +153,8 @@ export default function App() {
         <Route path="/my/watches" element={<ProtectedRoute><MyWatchesPage /></ProtectedRoute>} />
         <Route path="/my/bids" element={<ProtectedRoute><MyBidsPage /></ProtectedRoute>} />
         <Route path="/liked" element={<ProtectedRoute><LikedProductsPage /></ProtectedRoute>} />
+        <Route path="/chats" element={<ProtectedRoute><ChatListPage /></ProtectedRoute>} />
+        <Route path="/chats/:roomId" element={<ProtectedRoute><ChatRoomPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {isAuthenticated && <BottomTabBar />}
