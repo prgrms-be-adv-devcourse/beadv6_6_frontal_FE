@@ -66,6 +66,14 @@ export default function useChatWebSocket(roomId) {
         if (message.body) {
           const newMsg = JSON.parse(message.body)
           setMessages((prev) => [...prev, newMsg])
+          
+          // 상대방이 보낸 메시지인 경우 읽음 처리 요청
+          if (Number(newMsg.senderId) !== Number(user.id)) {
+            client.publish({
+              destination: `/app/chat.read`,
+              body: JSON.stringify({ roomId: Number(roomId) })
+            })
+          }
         }
       })
     }
