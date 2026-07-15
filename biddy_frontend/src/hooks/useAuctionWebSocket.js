@@ -1,8 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Client } from "@stomp/stompjs"
 
-// WebSocket URL: Vercel 환경 변수 또는 기본값 사용
-const WS_URL = import.meta.env.VITE_WS_URL || "wss://43.200.204.191.nip.io/ws"
+// WebSocket URL 설정 (채팅과 동일한 패턴)
+// 환경 변수가 있으면 사용, 없으면 API_BASE_URL 기반으로 자동 생성
+const getWebSocketURL = () => {
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL
+  }
+
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+  // http://localhost:8000/api → ws://localhost:8000/ws
+  // https://43.200.204.191.nip.io/api → wss://43.200.204.191.nip.io/ws
+  return baseUrl.replace(/^http/, 'ws').replace(/\/api$/, '') + '/ws'
+}
+
+const WS_URL = getWebSocketURL()
 
 export default function useAuctionWebSocket(auctionId) {
   const clientRef = useRef(null)
