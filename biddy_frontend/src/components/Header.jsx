@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { ChevronLeft, ShoppingCart, Bell, LogOut, LogIn, User, Shield } from "lucide-react"
+import { ChevronLeft, ShoppingCart, Bell, LogOut, LogIn, User, Shield, Search } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 
 export default function Header({ title, showBack = false, showCart = true, right = null }) {
@@ -44,6 +44,13 @@ export default function Header({ title, showBack = false, showCart = true, right
 
         <div className="ml-auto flex items-center gap-1">
           {right}
+          <button
+            onClick={() => navigate("/search")}
+            aria-label="검색"
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-graydark"
+          >
+            <Search size={20} />
+          </button>
           <button
             onClick={() => navigate("/mypage")}
             aria-label="마이페이지"
