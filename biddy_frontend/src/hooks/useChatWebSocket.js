@@ -40,13 +40,9 @@ export default function useChatWebSocket(roomId) {
 
     let baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
     
-    // Vercel의 Rewrite 기능을 타는 경우 등, 상대 경로('/api')로 들어오면 절대 경로로 변환
-    if (baseUrl.startsWith('/')) {
-      baseUrl = `${window.location.protocol}//${window.location.host}${baseUrl}`;
-    }
-
-    // http -> ws, https -> wss 로 변환 후 뒤에 /ws-chat 추가
-    const wsUrl = baseUrl.replace(/^http/, 'ws') + '/ws-chat';
+    // 환경 변수에 VITE_CHAT_WS_URL이 명시되어 있으면 무조건 그것을 사용 (Vercel 배포 시 사용)
+    // 없으면 로컬 개발 환경용으로 baseUrl을 변환해서 사용
+    const wsUrl = import.meta.env.VITE_CHAT_WS_URL || (baseUrl.replace(/^http/, 'ws') + '/ws-chat');
 
     const client = new Client({
       brokerURL: wsUrl,
