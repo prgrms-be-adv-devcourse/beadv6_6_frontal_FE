@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Client } from "@stomp/stompjs"
 
-const WS_URL = import.meta.env.VITE_WS_URL
+// WebSocket URL: Vercel 환경 변수 또는 기본값 사용
+const WS_URL = import.meta.env.VITE_WS_URL || "wss://43.200.204.191.nip.io/ws"
 
 export default function useAuctionWebSocket(auctionId) {
   const clientRef = useRef(null)
@@ -14,7 +15,7 @@ export default function useAuctionWebSocket(auctionId) {
   const connect = useCallback(() => {
     if (!auctionId) return
     if (!WS_URL) {
-      console.warn("VITE_WS_URL is not defined")
+      console.warn("VITE_WS_URL is not defined - WebSocket disabled")
       return
     }
 
