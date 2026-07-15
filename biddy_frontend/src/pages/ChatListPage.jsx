@@ -92,10 +92,22 @@ export default function ChatListPage() {
                   <h3 className="font-semibold text-foreground truncate text-sm">
                     {room.counterpartNickname}
                   </h3>
+                  {room.lastMessageAt && (
+                    <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
+                      {new Date(room.lastMessageAt).toLocaleDateString()}
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground truncate">
-                  {room.product?.title || "삭제된 상품입니다."}
-                </p>
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-muted-foreground truncate">
+                    {room.lastMessage || room.product?.title || "메시지가 없습니다."}
+                  </p>
+                  {room.unreadCount > 0 && (
+                    <span className="ml-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center shrink-0">
+                      {room.unreadCount > 99 ? '99+' : room.unreadCount}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ))
