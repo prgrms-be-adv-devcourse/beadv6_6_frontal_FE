@@ -35,16 +35,21 @@ function SellerCard({ seller }) {
 function NormalDetail({ product, isOwner }) {
   const navigate = useNavigate()
   const { showToast } = useFeedback()
+  const { isAuthenticated } = useAuth()
   const [liked, setLiked] = useState(false)
   const [added, setAdded] = useState(false)
 
   useEffect(() => {
-    if (!isOwner) {
+    if (!isOwner && isAuthenticated) {
       fetchIsLiked(product.id).then(setLiked).catch(() => {})
     }
-  }, [product.id, isOwner])
+  }, [product.id, isOwner, isAuthenticated])
 
   const handleToggleLike = async () => {
+    if (!isAuthenticated) {
+      navigate("/login")
+      return
+    }
     try {
       if (liked) {
         await unlikeProduct(product.id)
@@ -61,6 +66,10 @@ function NormalDetail({ product, isOwner }) {
   }
 
   const handleStartChat = async () => {
+    if (!isAuthenticated) {
+      navigate("/login")
+      return
+    }
     try {
       const room = await createOrGetRoom(product.id, product.sellerId)
       navigate(`/chats/${room.id}`)
@@ -70,8 +79,35 @@ function NormalDetail({ product, isOwner }) {
   }
 
   const handleAdd = async () => {
+    if (!isAuthenticated) {
+      navigate("/login")
+      return
+    }
     await addToCart(product.id)
     setAdded(true)
+  }
+
+  const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      navigate("/login")
+      return
+    }
+    navigate("/orders", {
+      state: {
+        items: [
+          {
+            id: product.id,
+            productId: product.id,
+            title: product.title,
+            price: product.price,
+            qty: 1,
+            image: product.image,
+            sellerId: product.sellerId,
+          },
+        ],
+        total: product.price,
+      },
+    })
   }
 
   return (
@@ -120,24 +156,7 @@ function NormalDetail({ product, isOwner }) {
               {added ? "담김" : "장바구니"}
             </button>
             <button
-              onClick={() =>
-                navigate("/orders", {
-                  state: {
-                    items: [
-                      {
-                        id: product.id,
-                        productId: product.id,
-                        title: product.title,
-                        price: product.price,
-                        qty: 1,
-                        image: product.image,
-                        sellerId: product.sellerId,
-                      },
-                    ],
-                    total: product.price,
-                  },
-                })
-              }
+              onClick={handleBuyNow}
               className="h-12 flex-1 rounded-xl bg-teal font-semibold text-teal-foreground"
             >
               즉시구매
@@ -152,6 +171,7 @@ function NormalDetail({ product, isOwner }) {
 function AuctionDetail({ product, isOwner }) {
   const navigate = useNavigate()
   const { showToast } = useFeedback()
+  const { isAuthenticated } = useAuth()
   const a = product.auction ?? {}
   const [currentBid, setCurrentBid] = useState(a.currentBid ?? 0)
   const [bidCount, setBidCount] = useState(a.bidCount ?? 0)
@@ -167,6 +187,10 @@ function AuctionDetail({ product, isOwner }) {
   const nextBid = currentBid + a.bidUnit
 
   const handleStartChat = async () => {
+    if (!isAuthenticated) {
+      navigate("/login")
+      return
+    }
     try {
       const room = await createOrGetRoom(product.id, product.sellerId)
       navigate(`/chats/${room.id}`)
@@ -176,6 +200,10 @@ function AuctionDetail({ product, isOwner }) {
   }
 
   const handleBid = async () => {
+    if (!isAuthenticated) {
+      navigate("/login")
+      return
+    }
     setSubmitting(true)
     await placeBid(product.id, nextBid)
     setCurrentBid(nextBid)
