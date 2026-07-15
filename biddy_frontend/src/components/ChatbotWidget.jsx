@@ -72,11 +72,6 @@ export default function ChatbotWidget() {
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{m.text}</p>
-                  {m.sources?.length > 0 && (
-                    <p className="mt-1 truncate text-[10px] text-muted-foreground">
-                      출처: {m.sources.join(", ")}
-                    </p>
-                  )}
                 </div>
               </div>
             ))}
