@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom"
-import { ChevronLeft, ShoppingCart, Bell, LogOut, User, Shield } from "lucide-react"
+import { ChevronLeft, ShoppingCart, Bell, LogOut, LogIn, User, Shield } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 
 export default function Header({ title, showBack = false, showCart = true, right = null }) {
   const navigate = useNavigate()
-  const { logout, isAdmin } = useAuth()
+  const { logout, isAdmin, isAuthenticated } = useAuth()
 
   return (
     <header className="sticky top-0 z-30 bg-dark text-dark-foreground">
@@ -76,13 +76,23 @@ export default function Header({ title, showBack = false, showCart = true, right
               >
                 <ShoppingCart size={20} />
               </button>
-              <button
-                onClick={logout}
-                aria-label="로그아웃"
-                className="grid h-9 w-9 place-items-center rounded-full hover:bg-graydark"
-              >
-                <LogOut size={19} />
-              </button>
+              {isAuthenticated ? (
+                <button
+                  onClick={logout}
+                  aria-label="로그아웃"
+                  className="grid h-9 w-9 place-items-center rounded-full hover:bg-graydark"
+                >
+                  <LogOut size={19} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate("/login")}
+                  aria-label="로그인"
+                  className="grid h-9 w-9 place-items-center rounded-full hover:bg-graydark"
+                >
+                  <LogIn size={19} />
+                </button>
+              )}
             </>
           )}
         </div>

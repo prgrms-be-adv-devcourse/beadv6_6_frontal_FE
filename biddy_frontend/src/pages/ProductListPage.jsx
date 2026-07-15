@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { Plus, Heart } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
+import ChatbotWidget from "../components/ChatbotWidget"
 import { fetchProducts, deleteProduct } from "../api/productApi"
 import { fetchAuctionFeed } from "../api/auctionApi"
 import { fetchMemberNickname } from "../api/memberApi"
@@ -88,6 +89,13 @@ export default function ProductListPage() {
               className="rounded-lg bg-card px-3 py-1.5 text-xs font-semibold text-foreground ring-1 ring-border"
             >
               새로고침
+            </button>
+            <button
+              onClick={() => navigate("/products/create")}
+              className="flex items-center gap-1 rounded-lg bg-teal px-3 py-1.5 text-xs font-semibold text-white"
+            >
+              <Plus size={13} />
+              등록하기
             </button>
           </div>
         </div>
@@ -193,13 +201,7 @@ export default function ProductListPage() {
       </div>
       )}
 
-      <button
-        onClick={() => navigate("/products/create")}
-        aria-label="상품 등록"
-        className="fixed bottom-20 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-teal text-teal-foreground shadow-lg shadow-teal/30 transition-transform hover:scale-105 lg:bottom-6 lg:right-6"
-      >
-        <Plus size={26} />
-      </button>
+      <ChatbotWidget />
     </PageContainer>
   )
 }
