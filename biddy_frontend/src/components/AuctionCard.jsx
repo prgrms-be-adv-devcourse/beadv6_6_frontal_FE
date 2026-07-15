@@ -8,7 +8,7 @@ import { timeLeft } from "../lib/format"
 export default function AuctionCard({ product }) {
   const navigate = useNavigate()
   const [liked, setLiked] = useState(product.liked)
-  const remaining = timeLeft(product.auction.endAt)
+  const remaining = timeLeft(new Date(product.auction.endsAt).getTime())
 
   return (
     <button
