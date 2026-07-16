@@ -11,9 +11,13 @@ import {
 } from "../api/searchApi"
 import { useAuth } from "../contexts/AuthContext"
 
+function getProductId(product) {
+  return product?.productId ?? product?.id
+}
+
 function normalizeProduct(product) {
   return {
-    id: product?.productId ?? product?.id,
+    id: getProductId(product),
     title: product?.name ?? product?.title ?? "상품명 없음",
     price: product?.price ?? 0,
     status: product?.status ?? "-",
