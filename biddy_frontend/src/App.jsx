@@ -153,7 +153,8 @@ export default function App() {
           }
         />
         <Route path="/auctions" element={<ProtectedRoute><AuctionFeedPage /></ProtectedRoute>} />
-        <Route path="/auctions/:auctionId" element={<ProtectedRoute><AuctionDetailPage /></ProtectedRoute>} />
+        {/* 경매 상세 조회는 비로그인 허용, 입찰/관심 등록은 화면 내부에서 로그인 요구 */}
+        <Route path="/auctions/:auctionId" element={<AuctionDetailPage />} />
         {/* 관심 경매는 찜 목록에 합쳐짐 */}
         <Route path="/my/watches" element={<Navigate to="/liked" replace />} />
         <Route path="/my/bids" element={<ProtectedRoute><MyBidsPage /></ProtectedRoute>} />
