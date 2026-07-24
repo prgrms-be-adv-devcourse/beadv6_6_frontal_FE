@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #f1f1f1;
-  --color-foreground: #111827;
+  --color-background: #ffffff;
+  --color-foreground: #1c2b2e;
 
   --color-card: #ffffff;
-  --color-card-foreground: #111827;
+  --color-card-foreground: #1c2b2e;
 
-  --color-muted: #e8e8e8;
+  --color-muted: #f1f1f1;
   --color-muted-foreground: #6b7280;
 
-  --color-border: #e2e2e2;
+  --color-border: #e5e5e5;
 
   /* Brand */
-  --color-dark: #222831;
+  --color-dark: #2c5f6e;
   --color-dark-foreground: #ffffff;
-  --color-graydark: #3d444d;
+  --color-graydark: #234c59;
 
-  /* Point teal */
-  --color-teal: #10b3b6;
+  /* Point teal (Modernist deep slate teal) */
+  --color-teal: #2c5f6e;
   --color-teal-foreground: #ffffff;
-  --color-teal-soft: #e3f6f6;
+  --color-teal-soft: #e4edef;
 
   /* Auction amber */
   --color-amber: #f59e0b;

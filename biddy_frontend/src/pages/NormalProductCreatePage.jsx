@@ -56,9 +56,9 @@ export default function NormalProductCreatePage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header showBack title="일반 판매 등록" showCart={false} />
-      <div className="mx-auto w-full max-w-md">
+      <div className="mx-auto w-full max-w-md px-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-4 pb-40">
         <Field label="상품 이미지" hint="최대 5장">
           <ImageUploader onFilesChange={setImageFiles} />

@@ -68,22 +68,22 @@ export default function ProductEditPage() {
 
   if (!form) {
     return (
-      <PageContainer>
+      <PageContainer noPadX>
         <Header showBack title="상품 수정" showCart={false} />
-        <p className="mx-auto w-full max-w-md py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
+        <p className="mx-auto w-full max-w-md px-4 py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
       </PageContainer>
     )
   }
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header showBack title="상품 수정" showCart={false} />
-      <div className="mx-auto w-full max-w-md">
+      <div className="mx-auto w-full max-w-md px-4">
 
       <div className="flex flex-col gap-3 pt-4 pb-40">
         <label className="text-sm font-semibold text-foreground">이미지</label>
         {existingImages.length > 0 && (
-          <div className="no-scrollbar flex gap-2 overflow-x-auto">
+          <div className="no-scrollbar flex gap-2 overflow-x-auto p-1 -m-1">
             {existingImages.map((url) => (
               <div key={url} className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl ring-1 ring-border">
                 <img src={url} alt="상품 이미지" className="h-full w-full object-cover" />

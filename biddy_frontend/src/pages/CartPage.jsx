@@ -211,9 +211,9 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <PageContainer>
+      <PageContainer noPadX>
         <Header showBack title="장바구니" showCart={false} />
-        <div className="mx-auto w-full max-w-md space-y-3 pt-4">
+        <div className="mx-auto w-full max-w-md space-y-3 px-4 pt-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-muted" />
           ))}
@@ -224,9 +224,9 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <PageContainer>
+      <PageContainer noPadX>
         <Header showBack title="장바구니" showCart={false} />
-        <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 py-24 text-center">
+        <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 px-4 py-24 text-center">
           <div className="grid h-16 w-16 place-items-center rounded-full bg-muted text-muted-foreground">
             <ShoppingCart size={28} />
           </div>
@@ -244,13 +244,13 @@ export default function CartPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header showBack title="장바구니" showCart={false} />
-      <div className="mx-auto w-full max-w-md">
+      <div className="mx-auto w-full max-w-md px-4">
 
       <div className="flex items-center justify-between pt-3 pb-1">
         <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <input type="checkbox" checked={allChecked} onChange={toggleAll} className="h-4 w-4 accent-[#10b3b6]" />
+          <input type="checkbox" checked={allChecked} onChange={toggleAll} className="h-4 w-4 accent-teal" />
           전체 선택 ({selectedItems.length}/{items.length})
         </label>
         <button 
@@ -269,7 +269,7 @@ export default function CartPage() {
               checked={!!selected[item.id] && (item.stock ?? 0) > 0}
               disabled={(item.stock ?? 0) <= 0}
               onChange={() => toggle(item.id)}
-              className="mt-1 h-4 w-4 accent-[#10b3b6] disabled:opacity-50"
+              className="mt-1 h-4 w-4 accent-teal disabled:opacity-50"
               aria-label="상품 선택"
             />
             <img

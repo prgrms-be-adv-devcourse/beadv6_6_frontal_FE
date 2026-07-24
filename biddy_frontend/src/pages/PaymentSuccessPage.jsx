@@ -95,7 +95,7 @@ export default function PaymentSuccessPage() {
   }, [paymentMethod, paymentKey, tossOrderId, amountStr])
 
   return (
-    <PageContainer withTabBar={false}>
+    <PageContainer withTabBar={false} noPadX>
       <Header title="결제 처리" showBack={false} showCart={false} />
 
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-8">
@@ -125,7 +125,7 @@ export default function PaymentSuccessPage() {
               </div>
               <div className="flex justify-between items-center py-2 border-b border-border text-sm">
                 <span className="text-muted-foreground">결제 금액</span>
-                <span className="font-bold text-[#10b3b6]">{formatKRW(Number(amountStr))}</span>
+                <span className="font-bold text-teal">{formatKRW(Number(amountStr))}</span>
               </div>
               {paymentKey && (
                 <div className="flex flex-col gap-1 py-2 text-xs">

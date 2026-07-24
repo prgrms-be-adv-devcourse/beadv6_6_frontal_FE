@@ -231,11 +231,26 @@ export default function OrderPage({ embedded = false }) {
 
   if (loading) {
     const loadingContent = <div className="py-20 text-center text-sm text-muted-foreground">불러오는 중...</div>
-    if (embedded) return loadingContent
+    if (checkoutData) {
+      return (
+        <PageContainer noPadX>
+          <Header showBack title="주문서 작성" showCart={false} />
+          <div className="mx-auto w-full max-w-md px-4">{loadingContent}</div>
+        </PageContainer>
+      )
+    }
+    if (embedded) {
+      return (
+        <>
+          <Header showBack title="주문내역" showCart={false} />
+          <div className="mx-auto w-full max-w-md px-4">{loadingContent}</div>
+        </>
+      )
+    }
     return (
-      <PageContainer>
-        <Header showBack title={checkoutData ? "주문서 작성" : "주문 내역"} showCart={false} />
-        <div className="mx-auto w-full max-w-md">{loadingContent}</div>
+      <PageContainer noPadX>
+        <Header title="거래내역" showCart={false} />
+        <div className="mx-auto w-full max-w-md px-4">{loadingContent}</div>
       </PageContainer>
     )
   }
@@ -243,13 +258,13 @@ export default function OrderPage({ embedded = false }) {
   // --- Render Checkout Confirmation UI ---
   if (checkoutData) {
     return (
-      <PageContainer>
+      <PageContainer noPadX>
         <Header showBack title="주문서 작성" showCart={false} />
-        <div className="mx-auto w-full max-w-md">
+        <div className="mx-auto w-full max-w-md px-4">
 
         <div className="pt-3 pb-2 border-b border-border">
           <h2 className="text-base font-bold text-foreground flex items-center gap-1.5">
-            <ShoppingBag size={18} className="text-[#10b3b6]" />
+            <ShoppingBag size={18} className="text-teal" />
             주문 상품 정보
           </h2>
         </div>
@@ -275,7 +290,7 @@ export default function OrderPage({ embedded = false }) {
 
         <div className="mt-4 rounded-2xl bg-card p-4 ring-1 ring-border">
           <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5 border-b border-border pb-2 mb-3">
-            <CreditCard size={16} className="text-[#10b3b6]" />
+            <CreditCard size={16} className="text-teal" />
             결제 정보
           </h3>
           <div className="flex justify-between items-center text-sm mb-2">
@@ -284,7 +299,7 @@ export default function OrderPage({ embedded = false }) {
           </div>
           <div className="flex justify-between items-center text-sm border-t border-border pt-2 mt-2">
             <span className="font-bold text-foreground">최종 결제 금액</span>
-            <span className="text-lg font-extrabold text-[#10b3b6]">{formatKRW(checkoutData.total)}</span>
+            <span className="text-lg font-extrabold text-teal">{formatKRW(checkoutData.total)}</span>
           </div>
         </div>
 
@@ -296,11 +311,11 @@ export default function OrderPage({ embedded = false }) {
               onClick={() => setPaymentMethod(PAYMENT_METHOD.WALLET)}
               className={`rounded-xl border p-3 text-left transition-colors ${
                 paymentMethod === PAYMENT_METHOD.WALLET
-                  ? "border-[#10b3b6] bg-[#10b3b6]/10"
+                  ? "border-teal bg-teal/10"
                   : "border-border bg-background"
               }`}
             >
-              <WalletCards size={20} className="mb-2 text-[#10b3b6]" />
+              <WalletCards size={20} className="mb-2 text-teal" />
               <span className="block text-sm font-semibold text-foreground">예치금 결제</span>
               <span className="mt-1 block text-xs text-muted-foreground">
                 {walletLoading
@@ -315,11 +330,11 @@ export default function OrderPage({ embedded = false }) {
               onClick={() => setPaymentMethod(PAYMENT_METHOD.NORMAL)}
               className={`rounded-xl border p-3 text-left transition-colors ${
                 paymentMethod === PAYMENT_METHOD.NORMAL
-                  ? "border-[#10b3b6] bg-[#10b3b6]/10"
+                  ? "border-teal bg-teal/10"
                   : "border-border bg-background"
               }`}
             >
-              <CreditCard size={20} className="mb-2 text-[#10b3b6]" />
+              <CreditCard size={20} className="mb-2 text-teal" />
               <span className="block text-sm font-semibold text-foreground">Toss 결제</span>
               <span className="mt-1 block text-xs text-muted-foreground">카드 등 일반 결제</span>
             </button>
@@ -427,11 +442,18 @@ export default function OrderPage({ embedded = false }) {
       </ul>
     )
 
-  if (embedded) return ordersList
+  if (embedded) {
+    return (
+      <>
+        <Header showBack title="주문내역" showCart={false} />
+        <div className="mx-auto w-full max-w-md px-4">{ordersList}</div>
+      </>
+    )
+  }
 
   return (
     <>
-      <Header title="주문 내역" />
+      <Header title="거래내역" showCart={false} />
       <PageContainer>{ordersList}</PageContainer>
     </>
   )

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Search, Sparkles, TrendingUp, Clock, X } from "lucide-react"
 import Header from "../components/Header"
@@ -9,15 +9,12 @@ import {
   fetchSearchSuggestions,
   searchProducts,
 } from "../api/searchApi"
+import { fetchMemberNickname } from "../api/memberApi"
 import { useAuth } from "../contexts/AuthContext"
-
-function getProductId(product) {
-  return product?.productId ?? product?.id
-}
 
 function normalizeProduct(product) {
   return {
-    id: getProductId(product),
+    id: product?.productId ?? product?.id,
     title: product?.name ?? product?.title ?? "상품명 없음",
     price: product?.price ?? 0,
     status: product?.status ?? "-",
@@ -41,7 +38,7 @@ function KeywordButton({ children, icon: Icon, onClick }) {
   )
 }
 
-function ProductResultCard({ product, reason, recommended = false }) {
+function ProductResultCard({ product, reason, recommended = false, sellerNickname }) {
   const navigate = useNavigate()
   const item = normalizeProduct(product)
 
@@ -87,7 +84,7 @@ function ProductResultCard({ product, reason, recommended = false }) {
             {Number(item.price).toLocaleString()}원
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            상태 {item.status} · 재고 {item.stock} · 판매자 #{item.sellerId}
+            상태 {item.status} · 재고 {item.stock} · 판매자 {sellerNickname || `#${item.sellerId}`}
           </p>
           {reason && <p className="mt-2 line-clamp-2 text-xs text-teal">{reason}</p>}
         </div>
@@ -111,6 +108,8 @@ export default function SearchPage() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [sellerNicknames, setSellerNicknames] = useState({})
+  const fetchedSellerIdsRef = useRef(new Set())
 
   const hasResult = Boolean(searchParams.get("q"))
 
@@ -181,6 +180,44 @@ export default function SearchPage() {
 
     return () => window.clearTimeout(timer)
   }, [trimmedQuery])
+
+  // 검색 결과 카드에 "판매자 #4" 같은 id 대신 닉네임을 보여주기 위해, 결과에 등장하는
+  // sellerId들을 모아 한 번씩만 조회해서 캐시해둠.
+  useEffect(() => {
+    const ids = [
+      ...new Set(
+        [
+          ...historyProducts.map((p) => normalizeProduct(p).sellerId),
+          ...recommendedProducts.map((item) => normalizeProduct(item.product).sellerId),
+          ...products.map((p) => normalizeProduct(p).sellerId),
+        ].filter((id) => id != null)
+      ),
+    ]
+    const missing = ids.filter((id) => !fetchedSellerIdsRef.current.has(id))
+    if (missing.length === 0) return
+    missing.forEach((id) => fetchedSellerIdsRef.current.add(id))
+
+    let active = true
+    Promise.all(
+      missing.map((id) =>
+        fetchMemberNickname(id)
+          .then((name) => [id, name || null])
+          .catch(() => [id, null])
+      )
+    ).then((entries) => {
+      if (!active) return
+      setSellerNicknames((prev) => {
+        const next = { ...prev }
+        entries.forEach(([id, name]) => {
+          next[id] = name
+        })
+        return next
+      })
+    })
+    return () => {
+      active = false
+    }
+  }, [historyProducts, recommendedProducts, products])
 
   const submitKeyword = (keyword) => {
     const nextKeyword = keyword.trim()
@@ -295,7 +332,12 @@ export default function SearchPage() {
               </div>
               <div className="grid gap-3 lg:grid-cols-2">
                 {historyProducts.map((product) => (
-                  <ProductResultCard key={normalizeProduct(product).id} product={product} recommended />
+                  <ProductResultCard
+                    key={normalizeProduct(product).id}
+                    product={product}
+                    recommended
+                    sellerNickname={sellerNicknames[normalizeProduct(product).sellerId]}
+                  />
                 ))}
               </div>
             </section>
@@ -332,6 +374,7 @@ export default function SearchPage() {
                         product={item.product}
                         reason={item.reason}
                         recommended
+                        sellerNickname={sellerNicknames[normalizeProduct(item.product).sellerId]}
                       />
                     ))}
                   </div>
@@ -353,6 +396,7 @@ export default function SearchPage() {
                       <ProductResultCard
                         key={`${normalizeProduct(product).id}-product-${index}`}
                         product={product}
+                        sellerNickname={sellerNicknames[normalizeProduct(product).sellerId]}
                       />
                     ))}
                   </div>

@@ -12,12 +12,13 @@ import NormalProductCreatePage from "./pages/NormalProductCreatePage"
 import AuctionProductCreatePage from "./pages/AuctionProductCreatePage"
 import AuctionFeedPage from "./pages/AuctionFeedPage"
 import AuctionDetailPage from "./pages/AuctionDetailPage"
-import MyWatchesPage from "./pages/MyWatchesPage"
 import MyBidsPage from "./pages/MyBidsPage"
 import CartPage from "./pages/CartPage"
 import OrderPage from "./pages/OrderPage"
 import WalletPage from "./pages/WalletPage"
 import MyPage from "./pages/Mypage"
+import MyProductsPage from "./pages/MyProductsPage"
+import SettingsPage from "./pages/SettingsPage"
 import MyPageLayout from "./components/MyPageLayout"
 import AdminPage from "./pages/AdminsPage"
 import AdminRoute from "./components/AdminRoute"
@@ -49,8 +50,10 @@ export default function App() {
           }
         >
           <Route index element={<MyPage />} />
+          <Route path="products" element={<MyProductsPage />} />
           <Route path="orders" element={<OrderPage embedded />} />
           <Route path="wallet" element={<WalletPage embedded />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route
           path="/admin"
@@ -151,7 +154,8 @@ export default function App() {
         />
         <Route path="/auctions" element={<ProtectedRoute><AuctionFeedPage /></ProtectedRoute>} />
         <Route path="/auctions/:auctionId" element={<ProtectedRoute><AuctionDetailPage /></ProtectedRoute>} />
-        <Route path="/my/watches" element={<ProtectedRoute><MyWatchesPage /></ProtectedRoute>} />
+        {/* 관심 경매는 찜 목록에 합쳐짐 */}
+        <Route path="/my/watches" element={<Navigate to="/liked" replace />} />
         <Route path="/my/bids" element={<ProtectedRoute><MyBidsPage /></ProtectedRoute>} />
         <Route path="/liked" element={<ProtectedRoute><LikedProductsPage /></ProtectedRoute>} />
         <Route path="/search" element={<SearchPage />} />

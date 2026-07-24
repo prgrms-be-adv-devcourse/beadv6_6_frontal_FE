@@ -6,6 +6,7 @@ import { getMyRooms } from "../api/chatApi"
 import { fetchProductById } from "../api/productApi"
 import { fetchMemberNickname } from "../api/memberApi"
 import { useAuth } from "../contexts/AuthContext"
+import { formatRelativeTime } from "../lib/format"
 
 export default function ChatListPage() {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ export default function ChatListPage() {
       try {
         setLoading(true)
         const myRooms = await getMyRooms()
-        
+
         // Fetch product and counterpart details for each room
         const roomsWithDetails = await Promise.all(
           myRooms.map(async (room) => {
@@ -27,7 +28,7 @@ export default function ChatListPage() {
             let counterpartNickname = "알 수 없음"
             try {
               product = await fetchProductById(room.productId)
-              
+
               // Determine counterpart
               const counterpartId = Number(user.id) === Number(room.buyerId) ? room.sellerId : room.buyerId
               counterpartNickname = await fetchMemberNickname(counterpartId)
@@ -41,7 +42,7 @@ export default function ChatListPage() {
             }
           })
         )
-        
+
         setRooms(roomsWithDetails)
       } catch (err) {
         setError(err.message)
@@ -49,14 +50,14 @@ export default function ChatListPage() {
         setLoading(false)
       }
     }
-    
+
     loadRooms()
   }, [user])
 
   return (
     <PageContainer noPadX>
       <Header />
-      
+
       <div className="px-4 pt-3 pb-4 border-b border-border">
         <h2 className="text-base font-bold text-foreground">채팅</h2>
       </div>
@@ -72,7 +73,7 @@ export default function ChatListPage() {
           </div>
         ) : (
           rooms.map((room) => (
-            <div 
+            <div
               key={room.id}
               onClick={() => navigate(`/chats/${room.id}`)}
               className="flex items-center gap-4 px-4 py-4 border-b border-border bg-card hover:bg-muted/30 cursor-pointer transition-colors"
@@ -86,7 +87,7 @@ export default function ChatListPage() {
                   <span className="text-xs font-bold text-teal">Biddy</span>
                 </div>
               )}
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline mb-1">
                   <h3 className="font-semibold text-foreground truncate text-sm">
@@ -94,7 +95,7 @@ export default function ChatListPage() {
                   </h3>
                   {room.lastMessageAt && (
                     <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
-                      {new Date(room.lastMessageAt).toLocaleDateString()}
+                      {formatRelativeTime(room.lastMessageAt)}
                     </span>
                   )}
                 </div>

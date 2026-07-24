@@ -84,9 +84,9 @@ export default function AuctionProductCreatePage() {
     `rounded-lg bg-card px-3 py-2.5 ring-1 ${errors[key] ? "ring-red-500" : "ring-border"}`
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header showBack title="경매 상품 등록" showCart={false} />
-      <div className="mx-auto w-full max-w-md">
+      <div className="mx-auto w-full max-w-md px-4">
 
       <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-soft px-3.5 py-3 text-sm text-amber">
         <Gavel size={18} />
@@ -149,7 +149,7 @@ export default function AuctionProductCreatePage() {
         <button
           onClick={handleSubmit}
           disabled={submitting}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-amber font-semibold text-amber-foreground disabled:opacity-50"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50"
         >
           <Gavel size={18} />
           {submitting ? "등록 중..." : "경매 상품 등록"}

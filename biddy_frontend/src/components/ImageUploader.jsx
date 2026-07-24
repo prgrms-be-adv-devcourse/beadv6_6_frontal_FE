@@ -23,7 +23,7 @@ export default function ImageUploader({ max = 5, onFilesChange }) {
   }
 
   return (
-    <div className="no-scrollbar flex gap-2 overflow-x-auto">
+    <div className="no-scrollbar flex gap-2 overflow-x-auto p-1 -m-1">
       <label className="flex h-24 w-24 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl bg-card text-muted-foreground ring-1 ring-border">
         <ImagePlus size={22} />
         <span className="text-xs font-medium">{previews.length}/{max}</span>

@@ -7,10 +7,10 @@ export default function ProductCreateTypePage() {
   const navigate = useNavigate()
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header showBack title="상품 등록" showCart={false} />
 
-      <div className="mx-auto w-full max-w-md pt-4">
+      <div className="mx-auto w-full max-w-md px-4 pt-4">
         <h1 className="text-xl font-bold text-foreground text-balance">어떻게 판매할까요?</h1>
         <p className="mt-1 text-sm text-muted-foreground">판매 방식을 선택하면 등록 폼으로 이동합니다.</p>
 

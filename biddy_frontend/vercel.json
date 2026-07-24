@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://43.202.187.240.nip.io/api/:path*"
+      "destination": "https://43.200.204.191.nip.io/api/:path*"
     },
     {
       "source": "/images/:path*",
-      "destination": "https://43.202.187.240.nip.io/images/:path*"
+      "destination": "https://43.200.204.191.nip.io/images/:path*"
     },
     {
       "source": "/:path*",
