@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { fetchWallet } from "../api/paymentApi"
 import { formatKRW } from "../lib/format"
 
-export default function Header({ title, showBack = false, showCart = true, right = null }) {
+export default function Header({ title, showBack = false, showCart = true, right = null, onBack = null }) {
   const navigate = useNavigate()
   const { logout, isAdmin, isAuthenticated } = useAuth()
   const isHomeStyle = !title && !showBack
@@ -36,7 +36,7 @@ export default function Header({ title, showBack = false, showCart = true, right
         <div className="flex min-w-0 items-center gap-1">
           {showBack && (
             <button
-              onClick={() => navigate(-1)}
+              onClick={onBack || (() => navigate(-1))}
               aria-label="뒤로 가기"
               className="grid h-9 w-9 shrink-0 place-items-center rounded-full hover:bg-muted"
             >

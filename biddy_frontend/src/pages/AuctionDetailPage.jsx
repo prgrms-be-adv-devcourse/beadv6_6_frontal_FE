@@ -334,12 +334,20 @@ export default function AuctionDetailPage() {
           입찰 내역 보기
         </button>
 
-        {/* Seller Close Button (inline — 판매자만) */}
-        {isLive && isSeller && (
-          <button onClick={handleClose} disabled={closing}
-            className="mt-3 w-full rounded-xl bg-red-500 py-3 text-center text-sm font-bold text-white disabled:opacity-50">
-            {closing ? "종료 처리 중..." : "경매 즉시 종료"}
-          </button>
+        {/* Seller Actions (inline — 판매자만) */}
+        {isSeller && (
+          <div className="mt-3 flex gap-2">
+            <button onClick={() => navigate(`/products/${auction.productId}/edit`)}
+              className="flex-1 rounded-xl bg-card py-3 text-center text-sm font-semibold text-foreground ring-1 ring-border">
+              수정
+            </button>
+            {isLive && (
+              <button onClick={handleClose} disabled={closing}
+                className="flex-1 rounded-xl bg-red-500 py-3 text-center text-sm font-bold text-white disabled:opacity-50">
+                {closing ? "종료 처리 중..." : "경매 즉시 종료"}
+              </button>
+            )}
+          </div>
         )}
 
         {/* Result */}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { Search, Sparkles, TrendingUp, Clock, X } from "lucide-react"
+import { Search, Sparkles, TrendingUp, Clock, X, Home } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import {
@@ -226,9 +226,39 @@ export default function SearchPage() {
     runSearch(nextKeyword)
   }
 
+  // 검색 결과 화면에서 뒤로가기 → 검색 홈으로 (검색할 때마다 히스토리가 쌓여서
+  // 예전엔 뒤로가기를 누르면 이전 검색어 결과로 돌아갔음). 이미 검색 홈이면
+  // 뒤로가기는 진짜 메인 홈으로 나감.
+  const handleBack = () => {
+    if (hasResult) {
+      setSearchParams({}, { replace: true })
+      setQuery("")
+      setSuggestions([])
+      setRecommendedProducts([])
+      setProducts([])
+      setError(null)
+    } else {
+      navigate("/")
+    }
+  }
+
   return (
     <PageContainer noPadX>
-      <Header title="검색" showBack />
+      <Header
+        title="검색"
+        showBack
+        onBack={handleBack}
+        right={
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            aria-label="홈으로"
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-muted"
+          >
+            <Home size={20} />
+          </button>
+        }
+      />
 
       <div className="px-4 pt-4">
         <form

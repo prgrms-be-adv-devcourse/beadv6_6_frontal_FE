@@ -4,6 +4,8 @@ import { X } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import ImageUploader from "../components/ImageUploader"
+import { Select } from "../components/FormField"
+import { CATEGORIES } from "../api/mockData"
 import { fetchProductById, updateProduct, uploadProductImages, deleteProductImage } from "../api/productApi"
 import { useFeedback } from "../contexts/FeedbackContext"
 
@@ -121,7 +123,7 @@ export default function ProductEditPage() {
         <input value={form.status} onChange={update("status")} className="rounded-lg bg-card px-3 py-2.5 ring-1 ring-border" />
 
         <label className="text-sm font-semibold text-foreground">카테고리</label>
-        <input value={form.category} onChange={update("category")} className="rounded-lg bg-card px-3 py-2.5 ring-1 ring-border" />
+        <Select value={form.category} onChange={update("category")} options={CATEGORIES.filter((c) => c !== "전체")} />
 
         <label className="text-sm font-semibold text-foreground">브랜드</label>
         <input value={form.brand} onChange={update("brand")} className="rounded-lg bg-card px-3 py-2.5 ring-1 ring-border" />

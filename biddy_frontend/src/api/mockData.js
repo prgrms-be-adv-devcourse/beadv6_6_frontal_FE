@@ -4,7 +4,7 @@
 const now = Date.now()
 const hours = (h) => h * 60 * 60 * 1000
 
-export const CATEGORIES = ["전체", "전자기기", "패션", "취미", "스포츠", "악기"]
+export const CATEGORIES = ["전체", "전자기기", "가구", "패션", "취미", "스포츠", "악기", "기타"]
 
 export const products = [
   {
