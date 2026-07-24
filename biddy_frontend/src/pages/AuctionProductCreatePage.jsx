@@ -88,11 +88,6 @@ export default function AuctionProductCreatePage() {
       <Header showBack title="경매 상품 등록" showCart={false} />
       <div className="mx-auto w-full max-w-md px-4">
 
-      <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-soft px-3.5 py-3 text-sm text-amber">
-        <Gavel size={18} />
-        등록 시 Kafka로 경매 등록 이벤트가 발행됩니다.
-      </div>
-
       {submitError && (
         <div className="mt-3 rounded-xl bg-red-500/10 px-3.5 py-3 text-sm text-red-500">{submitError}</div>
       )}
