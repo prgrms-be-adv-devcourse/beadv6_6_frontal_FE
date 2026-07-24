@@ -12,7 +12,7 @@ export default function PaymentFailPage() {
   const tossOrderId = searchParams.get("orderId")
 
   return (
-    <PageContainer withTabBar={false}>
+    <PageContainer withTabBar={false} noPadX>
       <Header title="결제 실패" showBack={false} showCart={false} />
 
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-8">

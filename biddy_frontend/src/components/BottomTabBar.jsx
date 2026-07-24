@@ -1,12 +1,12 @@
 import { NavLink, useLocation } from "react-router-dom"
-import { MessageCircle, Home, ClipboardList, PlusCircle, ShoppingCart, Wallet } from "lucide-react"
+import { MessageCircle, Home, ClipboardList, PlusCircle, User } from "lucide-react"
 
 const tabs = [
   { to: "/", label: "상품", icon: Home },
   { to: "/chats", label: "채팅", icon: MessageCircle },
   { to: "/products/create", label: "등록", icon: PlusCircle },
   { to: "/orders", label: "거래내역", icon: ClipboardList },
-  { to: "/wallet", label: "지갑", icon: Wallet },
+  { to: "/mypage", label: "마이", icon: User },
 ]
 
 export default function BottomTabBar() {

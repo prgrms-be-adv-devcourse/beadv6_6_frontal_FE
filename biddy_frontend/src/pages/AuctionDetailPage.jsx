@@ -238,7 +238,7 @@ export default function AuctionDetailPage() {
       <div className="px-4 pb-28">
         {/* Status + Remaining */}
         <div className="mt-3 flex items-center gap-2">
-          <StatusBadge variant={isLive ? "auction" : "neutral"}>{isLive ? "경매중" : "종료"}</StatusBadge>
+          <StatusBadge variant={isLive ? "teal" : "neutral"}>{isLive ? "경매중" : "종료"}</StatusBadge>
           {remaining && isLive && (
             <StatusBadge variant={remaining.urgent ? "amber" : "dark"}>
               <Clock size={12} /> {remaining.ended ? "마감" : remaining.text + " 남음"}

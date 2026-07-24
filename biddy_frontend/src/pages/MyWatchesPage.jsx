@@ -19,7 +19,7 @@ export default function MyWatchesPage() {
   }, [])
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header title="관심 경매" showBack />
       {loading ? (
         <div className="space-y-3 px-4 pt-3">{[...Array(3)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />)}</div>

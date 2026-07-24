@@ -44,9 +44,14 @@ export default function ChatbotWidget() {
   }
 
   return (
-    <>
+    // Fixed positioning normally anchors to the real browser viewport, which floats
+    // the widget outside the centered mobile-width frame on wider screens (the
+    // "hybrid" desktop layout puts a phone-width column in the middle of the page).
+    // This wrapper matches that same column width so bottom/right offsets below are
+    // relative to the visible frame, not the raw window edge.
+    <div className="pointer-events-none fixed inset-0 z-20 mx-auto w-full max-w-md lg:max-w-6xl">
       {open && (
-        <div className="fixed bottom-36 right-5 z-30 flex h-[420px] w-[320px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl bg-card shadow-2xl ring-1 ring-border lg:bottom-24 lg:right-6">
+        <div className="pointer-events-auto absolute bottom-36 right-5 z-30 flex h-[420px] w-[320px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl bg-card shadow-2xl ring-1 ring-border lg:bottom-24 lg:right-6">
           <div className="flex items-center justify-between bg-dark px-4 py-3 text-dark-foreground">
             <div className="flex items-center gap-2 text-sm font-semibold">
               <Bot size={18} className="text-teal" />
@@ -107,10 +112,10 @@ export default function ChatbotWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="챗봇 열기"
-        className="fixed bottom-20 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-teal text-teal-foreground shadow-lg shadow-teal/30 transition-transform hover:scale-105 lg:bottom-6 lg:right-6"
+        className="pointer-events-auto absolute bottom-20 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-teal text-teal-foreground shadow-lg shadow-teal/30 transition-transform hover:scale-105 lg:bottom-6 lg:right-6"
       >
         {open ? <X size={24} /> : <Bot size={26} />}
       </button>
-    </>
+    </div>
   )
 }

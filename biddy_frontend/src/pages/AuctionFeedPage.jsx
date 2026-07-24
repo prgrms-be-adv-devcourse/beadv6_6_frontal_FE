@@ -103,7 +103,7 @@ export default function AuctionFeedPage() {
   }, [statusFilter, sort])
 
   return (
-    <PageContainer>
+    <PageContainer noPadX>
       <Header title="경매" showBack />
 
       <div className="flex gap-2 px-4 pt-3">

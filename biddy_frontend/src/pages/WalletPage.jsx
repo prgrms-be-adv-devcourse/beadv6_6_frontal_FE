@@ -78,7 +78,14 @@ export default function WalletPage({ embedded = false }) {
 
   if (loading && !wallet) {
     const loadingContent = <div className="py-20 text-center text-sm text-muted-foreground">불러오는 중...</div>
-    if (embedded) return loadingContent
+    if (embedded) {
+      return (
+        <>
+          <Header showBack title="지갑" showCart={false} />
+          <div className="mx-auto w-full max-w-md px-4">{loadingContent}</div>
+        </>
+      )
+    }
     return (
       <>
         <Header title="내 지갑" />
@@ -104,7 +111,14 @@ export default function WalletPage({ embedded = false }) {
         </button>
       </div>
     )
-    if (embedded) return errorContent
+    if (embedded) {
+      return (
+        <>
+          <Header showBack title="지갑" showCart={false} />
+          <div className="mx-auto w-full max-w-md px-4">{errorContent}</div>
+        </>
+      )
+    }
     return (
       <>
         <Header title="내 지갑" />
@@ -123,8 +137,7 @@ export default function WalletPage({ embedded = false }) {
 
   const walletContent = (
     <>
-      <div className={embedded ? "" : "py-4"}>
-        {embedded && <h1 className="mb-4 text-xl font-extrabold text-foreground">지갑</h1>}
+      <div className={embedded ? "px-4 pt-4" : "py-4"}>
         {/* Balance card */}
           <div className="rounded-2xl bg-dark p-5 text-dark-foreground">
             <div className="flex items-center gap-2 text-sm opacity-80">
@@ -248,7 +261,14 @@ export default function WalletPage({ embedded = false }) {
     </>
   )
 
-  if (embedded) return walletContent
+  if (embedded) {
+    return (
+      <>
+        <Header showBack title="지갑" showCart={false} />
+        {walletContent}
+      </>
+    )
+  }
 
   return (
     <>

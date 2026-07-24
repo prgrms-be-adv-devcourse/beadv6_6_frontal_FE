@@ -1,165 +1,102 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { LogOut, UserX } from "lucide-react"
-import { Field, TextInput } from "../components/FormField"
-import { useAuth } from "../contexts/AuthContext"
-import { useFeedback } from "../contexts/FeedbackContext"
-import { getMyInfo, updateNickname, updatePassword, withdrawMember } from "../api/memberApi"
+import { User, Wallet as WalletIcon, Package, ClipboardList, Heart, Gavel, Settings } from "lucide-react"
+import Header from "../components/Header"
 
-// Rendered as the index section inside MyPageLayout's sidebar (no own Header/PageContainer).
+import { getMyInfo } from "../api/memberApi"
+import { fetchWallet } from "../api/paymentApi"
+import { formatKRW } from "../lib/format"
+
+const SHORTCUTS = [
+  { to: "/mypage/products", label: "내 상품", icon: Package },
+  { to: "/mypage/orders", label: "주문내역", icon: ClipboardList },
+  { to: "/liked", label: "찜 목록", icon: Heart },
+  { to: "/my/bids", label: "내 입찰", icon: Gavel },
+  { to: "/mypage/wallet", label: "지갑", icon: WalletIcon },
+  { to: "/mypage/settings", label: "설정", icon: Settings },
+]
+
+// Bottom-tab entry point for /mypage — its own Header (no back button), then
+// 당근마켓/번개장터 "나의" 탭처럼 지갑/주문/판매/설정으로 가는 허브 타일들.
+// 실제 계정 설정은 SettingsPage로 옮겼어요.
 export default function MyPage() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
-  const { showToast, confirmDialog } = useFeedback()
 
   const [info, setInfo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
-
-  const [nickname, setNickname] = useState("")
-  const [nicknameMsg, setNicknameMsg] = useState("")
-  const [nicknameSubmitting, setNicknameSubmitting] = useState(false)
-
-  const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" })
-  const [passwordMsg, setPasswordMsg] = useState("")
-  const [passwordSubmitting, setPasswordSubmitting] = useState(false)
+  const [balance, setBalance] = useState(null)
 
   useEffect(() => {
     getMyInfo()
-      .then((data) => {
-        setInfo(data)
-        setNickname(data.nickname || "")
-      })
+      .then(setInfo)
       .catch((err) => setLoadError(err.message))
       .finally(() => setLoading(false))
+    fetchWallet()
+      .then((data) => setBalance(data?.balance ?? null))
+      .catch(() => {})
   }, [])
 
-  const handleNicknameSubmit = async (e) => {
-    e.preventDefault()
-    setNicknameMsg("")
-    setNicknameSubmitting(true)
-    try {
-      await updateNickname(nickname)
-      setNicknameMsg("닉네임이 변경되었습니다.")
-    } catch (err) {
-      setNicknameMsg(err.message)
-    } finally {
-      setNicknameSubmitting(false)
-    }
-  }
-
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault()
-    setPasswordMsg("")
-    setPasswordSubmitting(true)
-    try {
-      await updatePassword(passwordForm)
-      setPasswordMsg("비밀번호가 변경되었습니다.")
-      setPasswordForm({ currentPassword: "", newPassword: "" })
-    } catch (err) {
-      setPasswordMsg(err.message)
-    } finally {
-      setPasswordSubmitting(false)
-    }
-  }
-
-  const handleWithdraw = async () => {
-    const confirmed = await confirmDialog({
-      title: "회원 탈퇴 요청",
-      message: "정말 탈퇴하시겠습니까?\n탈퇴는 관리자 승인 후 처리됩니다.",
-      confirmText: "탈퇴 요청",
-      variant: "danger",
-    })
-    if (!confirmed) return
-    try {
-      await withdrawMember()
-      await logout()
-      navigate("/login", { replace: true })
-    } catch (err) {
-      showToast({ message: err.message, type: "error" })
-    }
-  }
-
-  const handleLogout = async () => {
-    await logout()
-    navigate("/login", { replace: true })
-  }
-
-  if (loading) {
-    return <p className="py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
-  }
-
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
-      <h1 className="text-xl font-extrabold text-foreground">내 정보</h1>
+    <>
+      <Header title="마이페이지" showCart={false} />
 
-      {loadError && <p className="text-sm font-medium text-red-600">{loadError}</p>}
+      {loading ? (
+        <p className="py-10 text-center text-sm text-muted-foreground">불러오는 중...</p>
+      ) : (
+        <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 pt-4">
+          {info && (
+            <section className="flex items-center gap-3">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-teal-soft text-teal">
+                <User size={22} />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate font-bold text-foreground">{info.nickname || "회원"}</p>
+                <p className="truncate text-xs text-muted-foreground">{info.email}</p>
+              </div>
+            </section>
+          )}
 
-      {info && (
-        <section className="rounded-xl bg-card p-4 ring-1 ring-border">
-          <p className="text-sm text-muted-foreground">이메일</p>
-          <p className="font-semibold text-foreground">{info.email}</p>
-        </section>
+          {loadError && <p className="text-sm font-medium text-red-600">{loadError}</p>}
+
+          {balance != null && (
+            <section className="rounded-2xl bg-dark p-5 text-dark-foreground">
+              <div className="flex items-center gap-2 text-sm opacity-80">
+                <WalletIcon size={16} />
+                보유 예치금
+              </div>
+              <p className="mt-2 text-3xl font-bold tracking-tight">{formatKRW(balance)}</p>
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => navigate("/mypage/wallet")}
+                  className="h-10 flex-1 rounded-xl bg-white/10 text-sm font-semibold hover:bg-white/20"
+                >
+                  내역보기
+                </button>
+                <button
+                  onClick={() => navigate("/mypage/wallet")}
+                  className="h-10 flex-1 rounded-xl bg-white text-sm font-semibold text-dark"
+                >
+                  충전하기
+                </button>
+              </div>
+            </section>
+          )}
+
+          <section className="grid grid-cols-3 gap-2.5">
+            {SHORTCUTS.map(({ to, label, icon: Icon }) => (
+              <button
+                key={to}
+                onClick={() => navigate(to)}
+                className="flex flex-col items-center gap-1.5 rounded-2xl bg-card p-4 text-foreground ring-1 ring-border transition-colors hover:text-teal hover:ring-teal"
+              >
+                <Icon size={20} />
+                <span className="text-xs font-semibold">{label}</span>
+              </button>
+            ))}
+          </section>
+        </div>
       )}
-
-      <form onSubmit={handleNicknameSubmit} className="flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-foreground">닉네임 변경</h2>
-        <Field label="닉네임">
-          <TextInput value={nickname} onChange={(e) => setNickname(e.target.value)} minLength={2} maxLength={50} required />
-        </Field>
-        {nicknameMsg && <p className="text-sm font-medium text-teal">{nicknameMsg}</p>}
-        <button
-          type="submit"
-          disabled={nicknameSubmitting}
-          className="h-11 rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50"
-        >
-          {nicknameSubmitting ? "변경 중..." : "닉네임 변경"}
-        </button>
-      </form>
-
-      <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-foreground">비밀번호 변경</h2>
-        <Field label="현재 비밀번호">
-          <TextInput
-            type="password"
-            value={passwordForm.currentPassword}
-            onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
-            required
-          />
-        </Field>
-        <Field label="새 비밀번호" hint="8자 이상">
-          <TextInput
-            type="password"
-            value={passwordForm.newPassword}
-            onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
-            minLength={8}
-            required
-          />
-        </Field>
-        {passwordMsg && <p className="text-sm font-medium text-teal">{passwordMsg}</p>}
-        <button
-          type="submit"
-          disabled={passwordSubmitting}
-          className="h-11 rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50"
-        >
-          {passwordSubmitting ? "변경 중..." : "비밀번호 변경"}
-        </button>
-      </form>
-
-      <div className="mt-2 flex flex-col gap-2">
-        <button
-          onClick={handleLogout}
-          className="flex h-11 items-center justify-center gap-2 rounded-xl bg-card font-semibold text-foreground ring-1 ring-border"
-        >
-          <LogOut size={16} /> 로그아웃
-        </button>
-        <button
-          onClick={handleWithdraw}
-          className="flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-red-600"
-        >
-          <UserX size={16} /> 회원 탈퇴
-        </button>
-      </div>
-    </div>
+    </>
   )
 }

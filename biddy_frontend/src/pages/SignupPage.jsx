@@ -106,11 +106,22 @@ export default function SignupPage() {
     <PageContainer className="flex flex-col">
       <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center py-10">
         <div className="mb-8">
-          <p className="text-xl font-extrabold tracking-tight text-dark">
-            Bid<span className="text-teal">dy</span>
-          </p>
-          <h1 className="mt-5 text-3xl font-extrabold text-foreground">회원가입</h1>
+          <Link className="text-3xl font-extrabold tracking-tight text-teal" to="/">
+            Biddy
+          </Link>
           <p className="mt-2 text-sm text-muted-foreground">거래에 사용할 기본 정보를 입력해 주세요.</p>
+        </div>
+
+        <div className="mb-6 flex gap-1.5 rounded-xl bg-muted p-1">
+          <Link
+            to="/login"
+            className="flex-1 rounded-lg py-2.5 text-center text-sm font-semibold text-muted-foreground"
+          >
+            로그인
+          </Link>
+          <span className="flex-1 rounded-lg bg-teal py-2.5 text-center text-sm font-semibold text-teal-foreground">
+            회원가입
+          </span>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -218,13 +229,6 @@ export default function SignupPage() {
             {submitting ? "가입 중..." : "회원가입"}
           </button>
         </form>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          이미 계정이 있나요?{" "}
-          <Link to="/login" className="font-semibold text-teal">
-            로그인
-          </Link>
-        </p>
       </main>
     </PageContainer>
   )

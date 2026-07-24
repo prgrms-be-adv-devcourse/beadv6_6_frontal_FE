@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { Heart, ShoppingCart, Clock, Gavel, Star, ShieldCheck, MessageCircle } from "lucide-react"
+import { Heart, ShoppingCart, Clock, Gavel, Star, ShieldCheck, MessageCircle, Pencil, Trash2 } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import StatusBadge from "../components/StatusBadge"
 import PriceText from "../components/PriceText"
-import { fetchProductById, fetchIsLiked, likeProduct, unlikeProduct } from "../api/productApi"
+import { fetchProductById, fetchIsLiked, likeProduct, unlikeProduct, deleteProduct } from "../api/productApi"
 import { placeBid, findAuctionByProductId } from "../api/auctionApi"
 import { addToCart } from "../api/cartApi"
 import { formatKRW, timeLeft } from "../lib/format"
@@ -28,6 +28,54 @@ function SellerCard({ seller }) {
         </div>
       </div>
       <ShieldCheck size={20} className="text-teal" />
+    </div>
+  )
+}
+
+// 목록 화면에서 "내 상품"에만 뜨던 수정/삭제가 다른 카드 크기를 들쭉날쭉하게 만들어서
+// 상세 페이지 안으로 옮김 — 목록에서는 안 보이고, 소유자가 상세에 들어와야 보임.
+function OwnerActions({ product }) {
+  const navigate = useNavigate()
+  const { showToast, confirmDialog } = useFeedback()
+  const [deleting, setDeleting] = useState(false)
+
+  const handleDelete = async () => {
+    const confirmed = await confirmDialog({
+      title: "상품 삭제",
+      message: "이 상품을 삭제하시겠습니까?\n삭제하면 되돌릴 수 없습니다.",
+      confirmText: "삭제",
+    })
+    if (!confirmed) return
+    setDeleting(true)
+    try {
+      await deleteProduct(product.id)
+      showToast({ message: "상품이 삭제되었습니다.", type: "success" })
+      navigate("/")
+    } catch (err) {
+      showToast({ message: "삭제 실패: " + err.message, type: "error" })
+      setDeleting(false)
+    }
+  }
+
+  return (
+    <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => navigate(`/products/${product.id}/edit`)}
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-card font-semibold text-foreground ring-1 ring-border"
+        >
+          <Pencil size={18} />
+          수정
+        </button>
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-background font-semibold text-red-500 ring-1 ring-border disabled:opacity-50"
+        >
+          <Trash2 size={18} />
+          {deleting ? "삭제 중..." : "삭제"}
+        </button>
+      </div>
     </div>
   )
 }
@@ -114,8 +162,8 @@ function NormalDetail({ product, isOwner }) {
     <>
       <div className="px-4 pt-3 pb-28">
         <div className="flex items-center gap-2">
-          <StatusBadge variant="normal">일반 판매</StatusBadge>
-          <StatusBadge variant="neutral">{product.status}</StatusBadge>
+          <StatusBadge variant="neutral">{product.category}</StatusBadge>
+          <StatusBadge variant="normal">{product.status}</StatusBadge>
         </div>
         <h1 className="mt-2 text-lg font-bold text-foreground text-balance">{product.title}</h1>
         <PriceText value={product.price} size="xl" className="mt-1 block text-foreground" />
@@ -159,11 +207,12 @@ function NormalDetail({ product, isOwner }) {
               onClick={handleBuyNow}
               className="h-12 flex-1 rounded-xl bg-teal font-semibold text-teal-foreground"
             >
-              즉시구매
+              예치금으로 구매하기
             </button>
           </div>
         </div>
       )}
+      {isOwner && <OwnerActions product={product} />}
     </>
   )
 }
@@ -215,8 +264,8 @@ function AuctionDetail({ product, isOwner }) {
     <>
       <div className="px-4 pt-3 pb-28">
         <div className="flex items-center gap-2">
-          <StatusBadge variant="auction">경매</StatusBadge>
-          <StatusBadge variant="neutral">{product.status}</StatusBadge>
+          <StatusBadge variant="neutral">{product.category}</StatusBadge>
+          <StatusBadge variant="teal">경매중</StatusBadge>
         </div>
         <h1 className="mt-2 text-lg font-bold text-foreground text-balance">{product.title}</h1>
 
@@ -285,6 +334,7 @@ function AuctionDetail({ product, isOwner }) {
           </div>
         </div>
       )}
+      {isOwner && <OwnerActions product={product} />}
     </>
   )
 }
