@@ -28,7 +28,7 @@ export default function ProductListPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const [auctionMap, setAuctionMap] = useState({})
+  const [auctionByProductId, setAuctionByProductId] = useState({})
   const [likedIds, setLikedIds] = useState(new Set())
 
   const visibleItems = useMemo(
@@ -47,17 +47,19 @@ export default function ProductListPage() {
           return { ...p, sellerNickname: nickname || "알 수 없음" }
         })
       )
-      setItems(productsWithNickname)
-      // 경매 상품이 있으면 auctionId 매핑
+      // 일반 상품의 가격은 Product, 경매 상품의 현재가는 Auction 응답을 기준으로 사용한다.
       const hasAuction = productsWithNickname.some((p) => p.type === "auction")
+      const nextAuctionByProductId = {}
       if (hasAuction) {
         try {
           const auctionData = await fetchAuctionFeed({ size: 200 })
-          const map = {}
-          ;(auctionData?.content || []).forEach((a) => { map[String(a.productId)] = a.auctionId })
-          setAuctionMap(map)
+          ;(auctionData?.content || []).forEach((auction) => {
+            nextAuctionByProductId[String(auction.productId)] = auction
+          })
         } catch {}
       }
+      setAuctionByProductId(nextAuctionByProductId)
+      setItems(productsWithNickname)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -170,17 +172,21 @@ export default function ProductListPage() {
         ) : (
           visibleItems.map((p) => {
             const isAuction = p.type === "auction"
+            const auction = auctionByProductId[String(p.id)]
             const isOwner = Number(p.sellerId) === Number(user?.id)
             const goDetail = () => {
-              if (isAuction && auctionMap[String(p.id)]) {
-                navigate(`/auctions/${auctionMap[String(p.id)]}`)
+              if (isAuction && auction?.auctionId) {
+                navigate(`/auctions/${auction.auctionId}`)
               } else {
                 navigate(`/products/${p.id}`)
               }
             }
-            // 실제 필드는 product.auction.endAt (예전엔 존재하지 않는 product.auctionEndAt을
-            // 참조하고 있어서 남은 시간 카운트다운이 항상 안 뜨던 버그가 있었음)
-            const remaining = isAuction && p.auction?.endAt ? timeLeft(new Date(p.auction.endAt).getTime()) : null
+            const displayPrice = isAuction
+              ? auction?.currentBid ?? p.auction?.startPrice ?? p.price
+              : p.price
+            const priceLabel = isAuction && auction ? "현재 입찰가" : isAuction ? "시작가" : "판매가"
+            const endsAt = isAuction ? auction?.endsAt ?? p.auction?.endAt : null
+            const remaining = endsAt ? timeLeft(new Date(endsAt).getTime()) : null
 
             return (
               <div
@@ -224,7 +230,10 @@ export default function ProductListPage() {
                     <span className="truncate text-xs text-muted-foreground">{p.category}</span>
                   </div>
                   <h3 className="line-clamp-1 text-sm font-semibold text-foreground">{p.title}</h3>
-                  <span className="text-base font-bold text-foreground">{formatKRW(p.price)}</span>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-[11px] text-muted-foreground">{priceLabel}</span>
+                    <span className="text-base font-bold text-foreground">{formatKRW(displayPrice)}</span>
+                  </div>
                   <div className="mt-0.5 flex items-center gap-2">
                     {p.regDt && (
                       <span className="text-[11px] text-muted-foreground">{formatRelativeTime(p.regDt)}</span>
