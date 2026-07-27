@@ -58,8 +58,9 @@ export default function AuctionProductCreatePage() {
     setSubmitError(null)
     if (!validate()) return
     setSubmitting(true)
+    let created
     try {
-      const created = await createAuctionProduct({
+      created = await createAuctionProduct({
         ...form,
         price: Number(form.startPrice),
         startPrice: Number(form.startPrice),
@@ -68,16 +69,24 @@ export default function AuctionProductCreatePage() {
         startsAt: new Date().toISOString().slice(0, 19),
         endsAt: form.endsAt,
       })
-      if (imageFiles.length > 0) {
-        await uploadProductImages(created.id, imageFiles)
-      }
-      alert("경매 상품 등록 성공!")
-      navigate("/products")
     } catch (err) {
       setSubmitError(err.message || "등록에 실패했습니다")
-    } finally {
       setSubmitting(false)
+      return
     }
+
+    if (imageFiles.length > 0) {
+      try {
+        await uploadProductImages(created.id, imageFiles)
+        alert("경매 상품 등록 성공!")
+      } catch (err) {
+        alert("상품은 등록되었지만 이미지 업로드에 실패했습니다: " + err.message)
+      }
+    } else {
+      alert("경매 상품 등록 성공!")
+    }
+    setSubmitting(false)
+    navigate("/products")
   }
 
   const inputCls = (key) =>

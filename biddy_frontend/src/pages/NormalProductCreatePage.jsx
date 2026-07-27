@@ -33,8 +33,9 @@ export default function NormalProductCreatePage() {
       return
     }
     setSubmitting(true)
+    let created
     try {
-      const created = await createNormalProduct({
+      created = await createNormalProduct({
         title: form.title,
         description: form.description,
         category: form.category,
@@ -43,16 +44,27 @@ export default function NormalProductCreatePage() {
         status: form.condition,
         brand: "",
       })
-      if (imageFiles.length > 0) {
-        await uploadProductImages(created.id, imageFiles)
-      }
-      showToast({ message: "상품이 등록되었습니다.", type: "success" })
-      navigate("/products")
     } catch (err) {
       showToast({ message: "등록 실패: " + err.message, type: "error" })
-    } finally {
       setSubmitting(false)
+      return
     }
+
+    if (imageFiles.length > 0) {
+      try {
+        await uploadProductImages(created.id, imageFiles)
+        showToast({ message: "상품이 등록되었습니다.", type: "success" })
+      } catch (err) {
+        showToast({
+          message: "상품은 등록되었지만 이미지 업로드에 실패했습니다: " + err.message,
+          type: "error",
+        })
+      }
+    } else {
+      showToast({ message: "상품이 등록되었습니다.", type: "success" })
+    }
+    setSubmitting(false)
+    navigate("/products")
   }
 
   return (
