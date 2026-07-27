@@ -225,11 +225,14 @@ export default function WalletPage({ embedded = false }) {
                 거래 내역이 없습니다
               </div>
             ) : (
-              <ul className="mt-3 grid grid-cols-1 gap-2 lg:grid-cols-2">
+              <ul className="mt-3 flex flex-col gap-2">
                 {history.map((item) => {
                   const isPositive = item.kind === "in"
                   return (
-                    <li key={item.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+                    <li
+                      key={item.id}
+                      className="flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card p-3"
+                    >
                       <span
                         className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${
                           isPositive ? "bg-teal-soft text-teal" : "bg-amber-soft text-amber"
@@ -243,10 +246,12 @@ export default function WalletPage({ embedded = false }) {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-foreground">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">{formatDateTime(item.createdAt)}</p>
+                        <p className="truncate text-xs text-muted-foreground">{formatDateTime(item.createdAt)}</p>
                       </div>
                       <span
-                        className={`flex-shrink-0 text-sm font-bold ${isPositive ? "text-teal" : "text-foreground"}`}
+                        className={`shrink-0 whitespace-nowrap text-right text-sm font-bold ${
+                          isPositive ? "text-teal" : "text-foreground"
+                        }`}
                       >
                         {isPositive ? "+" : "-"}
                         {formatKRW(item.amount)}
