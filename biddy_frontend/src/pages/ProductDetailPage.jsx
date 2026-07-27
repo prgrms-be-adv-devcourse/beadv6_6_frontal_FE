@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { Heart, ShoppingCart, Clock, Gavel, Star, ShieldCheck, MessageCircle, Pencil, Trash2 } from "lucide-react"
+import { Heart, ShoppingCart, Star, ShieldCheck, MessageCircle, Pencil, Trash2 } from "lucide-react"
 import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import StatusBadge from "../components/StatusBadge"
 import PriceText from "../components/PriceText"
 import { fetchProductById, fetchIsLiked, likeProduct, unlikeProduct, deleteProduct } from "../api/productApi"
-import { placeBid, findAuctionByProductId } from "../api/auctionApi"
+import { findAuctionByProductId } from "../api/auctionApi"
 import { addToCart } from "../api/cartApi"
-import { formatKRW, timeLeft } from "../lib/format"
 import { useAuth } from "../contexts/AuthContext"
 import { fetchMemberNickname } from "../api/memberApi"
 import { useFeedback } from "../contexts/FeedbackContext"
@@ -167,6 +166,7 @@ function NormalDetail({ product, isOwner }) {
         </div>
         <h1 className="mt-2 text-lg font-bold text-foreground text-balance">{product.title}</h1>
         <PriceText value={product.price} size="xl" className="mt-1 block text-foreground" />
+        <p className="mt-1 text-sm text-muted-foreground">재고 {product.stock}개</p>
 
         <SellerCard seller={product.seller} />
 
@@ -208,128 +208,6 @@ function NormalDetail({ product, isOwner }) {
               className="h-12 flex-1 rounded-xl bg-teal font-semibold text-teal-foreground"
             >
               구매하기
-            </button>
-          </div>
-        </div>
-      )}
-      {isOwner && <OwnerActions product={product} />}
-    </>
-  )
-}
-
-function AuctionDetail({ product, isOwner }) {
-  const navigate = useNavigate()
-  const { showToast } = useFeedback()
-  const { isAuthenticated } = useAuth()
-  const a = product.auction ?? {}
-  const [currentBid, setCurrentBid] = useState(a.currentBid ?? 0)
-  const [bidCount, setBidCount] = useState(a.bidCount ?? 0)
-  const [remaining, setRemaining] = useState(timeLeft(a.endAt ?? null))
-  const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    if (!a.endAt) return
-    const t = setInterval(() => setRemaining(timeLeft(a.endAt)), 1000)
-    return () => clearInterval(t)
-  }, [a.endAt])
-
-  const nextBid = currentBid + a.bidUnit
-
-  const handleStartChat = async () => {
-    if (!isAuthenticated) {
-      navigate("/login")
-      return
-    }
-    try {
-      const room = await createOrGetRoom(product.id, product.sellerId)
-      navigate(`/chats/${room.id}`)
-    } catch (err) {
-      showToast({ message: "채팅방을 열 수 없습니다.", type: "error" })
-    }
-  }
-
-  const handleBid = async () => {
-    if (!isAuthenticated) {
-      navigate("/login")
-      return
-    }
-    setSubmitting(true)
-    await placeBid(product.id, nextBid)
-    setCurrentBid(nextBid)
-    setBidCount((c) => c + 1)
-    setSubmitting(false)
-  }
-
-  return (
-    <>
-      <div className="px-4 pt-3 pb-28">
-        <div className="flex items-center gap-2">
-          <StatusBadge variant="neutral">{product.category}</StatusBadge>
-          <StatusBadge variant="teal">경매중</StatusBadge>
-        </div>
-        <h1 className="mt-2 text-lg font-bold text-foreground text-balance">{product.title}</h1>
-
-        {/* Auction status block */}
-        <div className="mt-3 rounded-2xl bg-dark p-4 text-dark-foreground">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-white/70">현재 입찰가</span>
-            <span className="flex items-center gap-1 text-xs text-white/70">
-              <Gavel size={12} /> 입찰 {bidCount}회
-            </span>
-          </div>
-          <PriceText value={currentBid} size="xl" className="mt-1 block text-teal" />
-
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-lg bg-graydark py-2">
-              <p className="text-[11px] text-white/60">시작가</p>
-              <p className="text-sm font-semibold">{formatKRW(a.startPrice)}</p>
-            </div>
-            <div className="rounded-lg bg-graydark py-2">
-              <p className="text-[11px] text-white/60">입찰 단위</p>
-              <p className="text-sm font-semibold">{formatKRW(a.bidUnit)}</p>
-            </div>
-            <div className="rounded-lg bg-graydark py-2">
-              <p className="text-[11px] text-white/60">즉시구매</p>
-              <p className="text-sm font-semibold">{a.buyNowPrice ? formatKRW(a.buyNowPrice) : "없음"}</p>
-            </div>
-          </div>
-
-          <div
-            className={`mt-3 flex items-center justify-center gap-1.5 rounded-lg py-2 text-sm font-semibold ${
-              remaining.urgent ? "bg-amber text-amber-foreground" : "bg-graydark text-white"
-            }`}
-          >
-            <Clock size={15} />
-            {remaining.ended ? "경매 마감" : `남은 시간 ${remaining.text}`}
-          </div>
-        </div>
-
-        <SellerCard seller={product.seller} />
-
-        <section className="mt-4">
-          <h2 className="text-sm font-semibold text-foreground">상품 설명</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{product.description}</p>
-        </section>
-      </div>
-
-      {/* Sticky bid */}
-      {!isOwner && (
-        <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleStartChat}
-              aria-label="채팅하기"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-background ring-1 ring-border"
-            >
-              <MessageCircle size={22} className="text-muted-foreground" />
-            </button>
-            <button
-              onClick={handleBid}
-              disabled={submitting || remaining.ended}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50"
-            >
-              <Gavel size={18} />
-              {remaining.ended ? "마감된 경매입니다" : `${formatKRW(nextBid)} 입찰하기`}
             </button>
           </div>
         </div>
@@ -389,15 +267,19 @@ export default function ProductDetailPage() {
             목록으로
           </button>
         </div>
+      ) : product.type === "auction" ? (
+        <div className="flex flex-col items-center gap-3 py-24 text-center">
+          <p className="text-sm text-muted-foreground">경매 정보를 불러올 수 없습니다.</p>
+          <button onClick={() => navigate("/")} className="rounded-lg bg-teal px-4 py-2 text-sm font-semibold text-teal-foreground">
+            목록으로
+          </button>
+        </div>
       ) : (
         <>
           <div className="aspect-square w-full overflow-hidden bg-muted">
             <img src={product.image || "/placeholder.svg"} alt={product.title} className="h-full w-full object-cover" />
           </div>
-          {product.type === "auction"
-            ? <AuctionDetail product={product} isOwner={Number(product.sellerId) === Number(user?.id)} />
-            : <NormalDetail product={product} isOwner={Number(product.sellerId) === Number(user?.id)} />
-          }
+          <NormalDetail product={product} isOwner={Number(product.sellerId) === Number(user?.id)} />
         </>
       )}
       </div>
