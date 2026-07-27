@@ -9,6 +9,18 @@ export function confirmPayment(payload) {
   return createPayment(payload)
 }
 
+function createIdempotencyKey({ orderId, amount, paymentMethod, tossOrderId, pgTransactionId }) {
+  if (tossOrderId) return `payment:${tossOrderId}`
+  if (pgTransactionId) return `payment:${pgTransactionId}`
+  if (orderId && amount && paymentMethod) return `payment:${orderId}:${paymentMethod}:${amount}`
+
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return `payment:${crypto.randomUUID()}`
+  }
+
+  return `payment:${Date.now()}:${Math.random().toString(36).slice(2)}`
+}
+
 const TRANSACTION_LABELS = {
   CHARGE: "예치금 충전",
   WITHDRAW: "예치금 출금",
@@ -87,10 +99,18 @@ export async function createPayment({
   paymentKey,
   tossOrderId,
   pgTransactionId,
+  idempotencyKey,
 }) {
+  const resolvedIdempotencyKey =
+    idempotencyKey ||
+    createIdempotencyKey({ orderId, amount, paymentMethod, tossOrderId, pgTransactionId })
+
   return unwrapApiResponse(
     await apiRequest("/payments", {
       method: "POST",
+      headers: {
+        "Idempotency-Key": resolvedIdempotencyKey,
+      },
       body: {
         orderId,
         amount,

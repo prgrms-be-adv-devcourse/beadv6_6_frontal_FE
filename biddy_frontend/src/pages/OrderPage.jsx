@@ -355,9 +355,7 @@ export default function OrderPage({ embedded = false }) {
             disabled={submitting}
             className="h-12 w-full rounded-xl bg-teal font-semibold text-teal-foreground disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {submitting
-              ? "결제 처리 중..."
-              : `${paymentMethod === PAYMENT_METHOD.WALLET ? "예치금으로" : "Toss로"} ${formatKRW(checkoutData.total)} 결제하기`}
+            {submitting ? "결제 처리 중..." : "결제하기"}
           </button>
         </div>
         </div>
