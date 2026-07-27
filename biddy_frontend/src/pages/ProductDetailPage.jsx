@@ -207,7 +207,7 @@ function NormalDetail({ product, isOwner }) {
               onClick={handleBuyNow}
               className="h-12 flex-1 rounded-xl bg-teal font-semibold text-teal-foreground"
             >
-              예치금으로 구매하기
+              구매하기
             </button>
           </div>
         </div>
