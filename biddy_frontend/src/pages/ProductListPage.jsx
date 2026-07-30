@@ -52,9 +52,24 @@ export default function ProductListPage() {
       const nextAuctionByProductId = {}
       if (hasAuction) {
         try {
-          const auctionData = await fetchAuctionFeed({ size: 200 })
-          ;(auctionData?.content || []).forEach((auction) => {
+          const auctionProductIds = new Set(
+            productsWithNickname
+              .filter((product) => product.type === "auction")
+              .map((product) => String(product.id))
+          )
+          const firstPage = await fetchAuctionFeed({ page: 0, size: 100 })
+          const totalPages = Math.max(Number(firstPage?.totalPages) || 1, 1)
+          const remainingPages = await Promise.all(
+            Array.from({ length: totalPages - 1 }, (_, index) =>
+              fetchAuctionFeed({ page: index + 1, size: 100 })
+            )
+          )
+          const auctions = [firstPage, ...remainingPages]
+            .flatMap((page) => page?.content || [])
+
+          auctions.forEach((auction) => {
             const productId = String(auction.productId)
+            if (!auctionProductIds.has(productId)) return
             const current = nextAuctionByProductId[productId]
             if (!current || (auction.status === "LIVE" && current.status !== "LIVE")) {
               nextAuctionByProductId[productId] = auction
