@@ -5,7 +5,7 @@ import Header from "../components/Header"
 import PageContainer from "../components/PageContainer"
 import ChatbotWidget from "../components/ChatbotWidget"
 import { fetchProducts, fetchLikedProducts, likeProduct, unlikeProduct } from "../api/productApi"
-import { fetchAuctionFeed } from "../api/auctionApi"
+import { fetchAuctionDetail, fetchAuctionFeed } from "../api/auctionApi"
 import { fetchMemberNickname } from "../api/memberApi"
 import { useAuth } from "../contexts/AuthContext"
 import { formatKRW, timeLeft, formatRelativeTime } from "../lib/format"
@@ -54,9 +54,37 @@ export default function ProductListPage() {
         try {
           const auctionData = await fetchAuctionFeed({ size: 200 })
           ;(auctionData?.content || []).forEach((auction) => {
-            nextAuctionByProductId[String(auction.productId)] = auction
+            const productId = String(auction.productId)
+            const current = nextAuctionByProductId[productId]
+            if (!current || (auction.status === "LIVE" && current.status !== "LIVE")) {
+              nextAuctionByProductId[productId] = auction
+            }
           })
-        } catch {}
+
+          // 목록의 현재가는 WebSocket 상태와 무관하게 Auction REST 응답으로 확정한다.
+          // 집계 필드(currentBid)가 비어 있거나 시작가에 머문 데이터는 상세 응답의
+          // 최고 입찰 금액(topBidder.amount)으로 보강한다.
+          await Promise.all(
+            Object.entries(nextAuctionByProductId).map(async ([productId, auction]) => {
+              try {
+                const detail = await fetchAuctionDetail(auction.auctionId)
+                nextAuctionByProductId[productId] = {
+                  ...auction,
+                  ...detail,
+                  currentBid:
+                    detail?.topBidder?.amount
+                    ?? detail?.currentBid
+                    ?? auction.currentBid
+                    ?? auction.startPrice,
+                }
+              } catch (err) {
+                console.error(`경매 현재가 조회 실패: ${auction.auctionId}`, err)
+              }
+            })
+          )
+        } catch (err) {
+          console.error("경매 목록 조회 실패", err)
+        }
       }
       setAuctionByProductId(nextAuctionByProductId)
       setItems(productsWithNickname)
