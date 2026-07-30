@@ -257,7 +257,7 @@ export default function AuctionDetailPage() {
             <span className="text-xs text-white/70">{isLive ? "현재 입찰가" : "최종 낙찰가"}</span>
             <span className="flex items-center gap-1 text-xs text-white/70"><Gavel size={12} /> 입찰 {auction.bidCount}회</span>
           </div>
-          <PriceText value={auction.currentBid} size="xl" className="mt-1 block text-teal" />
+          <PriceText value={auction.currentBid || auction.topBidder?.amount || auction.startPrice} size="xl" className="mt-1 block text-teal" />
           <div className="mt-3 grid grid-cols-3 gap-2 text-center">
             <div className="rounded-lg bg-white/10 py-2">
               <p className="text-[11px] text-white/60">시작가</p>
