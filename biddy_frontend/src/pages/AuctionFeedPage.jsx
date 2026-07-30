@@ -53,7 +53,7 @@ function AuctionCard({ auction, product, sellerNickname, isWatched, onClick }) {
           }`}>{isLive ? "경매중" : "종료"}</span>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          {product?.category || "-"} · {Number(auction.currentBid).toLocaleString()}원 · 시작가 {Number(auction.startPrice).toLocaleString()}원
+          {product?.category || "-"} · 현재가 {Number(auction.currentBid).toLocaleString()}원
         </p>
         <div className="mt-0.5 flex items-center justify-between text-[11px] text-muted-foreground/70">
           <span>판매자: {sellerNickname || `회원 #${auction.sellerId}`}</span>
