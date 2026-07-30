@@ -15,7 +15,7 @@ function toView(p) {
     brand: p.brand,
     sellerId: p.sellerId,
     regDt: p.regDt,
-    image: p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls[0] : "/images/placeholder.png",
+    image: p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls[0] : "/placeholder.svg",
     imageUrls: p.imageUrls || [],
     liked: false,
     seller: {
