@@ -254,7 +254,7 @@ export default function AuctionDetailPage() {
         {/* Auction Info Block */}
         <div className="mt-3 rounded-2xl bg-dark p-4 text-dark-foreground">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-white/70">현재 입찰가</span>
+            <span className="text-xs text-white/70">{isLive ? "현재 입찰가" : "최종 낙찰가"}</span>
             <span className="flex items-center gap-1 text-xs text-white/70"><Gavel size={12} /> 입찰 {auction.bidCount}회</span>
           </div>
           <PriceText value={auction.currentBid} size="xl" className="mt-1 block text-teal" />
