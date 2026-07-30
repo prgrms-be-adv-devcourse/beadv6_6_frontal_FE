@@ -9,9 +9,9 @@ const getWebSocketURL = () => {
   }
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
-  // http://localhost:8000/api → ws://localhost:8000/ws
-  // https://43.200.204.191.nip.io/api → wss://43.200.204.191.nip.io/ws
-  return baseUrl.replace(/^http/, 'ws').replace(/\/api$/, '') + '/ws'
+  // http://localhost:8000/api → ws://localhost:8000/api/ws
+  // https://biddy-zeta.vercel.app/api → wss://biddy-zeta.vercel.app/api/ws
+  return baseUrl.replace(/^http/, 'ws') + '/ws'
 }
 
 const WS_URL = getWebSocketURL()
