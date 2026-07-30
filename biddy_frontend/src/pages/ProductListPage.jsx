@@ -184,7 +184,7 @@ export default function ProductListPage() {
             const displayPrice = isAuction
               ? auction?.currentBid ?? p.auction?.startPrice ?? p.price
               : p.price
-            const priceLabel = isAuction && auction ? "현재 입찰가" : isAuction ? "시작가" : "판매가"
+            const priceLabel = isAuction ? "현재가" : "판매가"
             const endsAt = isAuction ? auction?.endsAt ?? p.auction?.endAt : null
             const remaining = endsAt ? timeLeft(new Date(endsAt).getTime()) : null
 
