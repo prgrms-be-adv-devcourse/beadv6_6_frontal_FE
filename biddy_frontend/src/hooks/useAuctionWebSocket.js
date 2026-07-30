@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { Client } from "@stomp/stompjs"
 
-// WebSocket URL 설정 (채팅과 동일한 패턴)
+// WebSocket URL 설정 (useChatWebSocket 패턴 참고)
 // 환경 변수가 있으면 사용, 없으면 API_BASE_URL 기반으로 자동 생성
 const getWebSocketURL = () => {
-  if (import.meta.env.VITE_WS_URL) {
-    return import.meta.env.VITE_WS_URL
-  }
-
   const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
-  // http://localhost:8000/api → ws://localhost:8000/ws
-  // https://43.200.204.191.nip.io/api → wss://43.200.204.191.nip.io/ws
-  return baseUrl.replace(/^http/, 'ws').replace(/\/api$/, '') + '/ws'
+  // 환경 변수에 VITE_AUCTION_WS_URL이 명시되어 있으면 무조건 그것을 사용 (Vercel 배포 시 사용)
+  // 없으면 로컬 개발 환경용으로 baseUrl을 변환해서 사용
+  // http://localhost:8000/api → ws://localhost:8000/api/ws
+  // https://biddy-zeta.vercel.app/api → wss://biddy-zeta.vercel.app/api/ws
+  return import.meta.env.VITE_AUCTION_WS_URL || (baseUrl.replace(/^http/, 'ws') + '/ws')
 }
 
 const WS_URL = getWebSocketURL()
