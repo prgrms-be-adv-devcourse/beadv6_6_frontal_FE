@@ -366,10 +366,14 @@ export default function AuctionDetailPage() {
       </div>
 
       {/* Sticky Bottom Bar */}
-      {isLive && !isSeller && (
+      {isLive && isAuthenticated && !isSeller && (
         <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-border bg-card px-4 py-3">
           {bidError && <p className="mb-2 text-center text-xs font-medium text-red-500">{bidError}</p>}
           {bidSuccess && <p className="mb-2 text-center text-xs font-medium text-teal">{bidSuccess}</p>}
+          <div className="mb-2 flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">다음 입찰가</span>
+            <PriceText value={minBid} size="sm" className="font-bold text-teal" />
+          </div>
           <div className="flex items-center gap-2">
             <button onClick={handleWatch}
               aria-label="찜하기"
