@@ -97,17 +97,37 @@ export default function AuctionDetailPage() {
   const ws = useAuctionWebSocket(auctionId)
 
   useEffect(() => {
-    if (!auction || !ws.lastMessage) return
-    if (ws.currentBid !== null) {
+    const message = ws.lastMessage
+    if (!auction || !message) return
+
+    if (message.type === "BID" && message.currentBid != null) {
+      const currentBid = Number(message.currentBid)
+      if (!Number.isFinite(currentBid)) return
+
       setAuction((prev) => prev ? {
-        ...prev, currentBid: ws.currentBid, bidCount: ws.bidCount ?? prev.bidCount,
+        ...prev,
+        currentBid,
+        bidCount: message.bidCount ?? prev.bidCount,
+        topBidder: message.bidderId ? {
+          ...(prev.topBidder || {}),
+          bidderId: message.bidderId,
+          amount: currentBid,
+        } : prev.topBidder,
       } : prev)
-      setBidAmount(String(ws.currentBid + (auction.minIncrement || 0)))
+
+      setBidAmount(String(currentBid + (auction.minIncrement || 0)))
+
+      if (message.bidderId) {
+        fetchNicknames([message.bidderId])
+          .then((names) => setNicknames((prev) => ({ ...prev, ...names })))
+          .catch(() => {})
+      }
     }
-    if (ws.status === "ENDED") {
+
+    if (message.type === "ENDED" || message.type === "UNSOLD") {
       setAuction((prev) => prev ? { ...prev, status: "ENDED" } : prev)
     }
-  }, [ws.lastMessage])
+  }, [ws.lastMessage, auction?.minIncrement])
 
   const loadAuction = useCallback(() => {
     setLoading(true)
